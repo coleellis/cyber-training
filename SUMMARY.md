@@ -71,7 +71,8 @@
 
 * [Mastering GDB](toolkit/gdb/README.md)
   * [Static Analysis](toolkit/gdb/static-analysis.md)
-  * [Stepping](toolkit/gdb/stepping.md)
+  * [Stepping and Continuing](toolkit/gdb/stepping.md)
+  * [Viewing Data](toolkit/gdb/viewing-data.md)
   * [GEF Features](toolkit/gdb/gef.md)
 * [Mastering Radare2](toolkit/radare2/README.md)
   * [Static Analysis](toolkit/radare2/static-analysis.md)

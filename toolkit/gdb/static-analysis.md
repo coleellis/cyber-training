@@ -139,7 +139,7 @@ End of assembler dump.
 Why does this happen? When the binary is running, the PLT functions are resolved to their actual addresses. For more information, read [this page](/binex/07-aslr/README.md).
 
 ### The GOT Table
-You can use `got` to view the GOT table. *You can only do this when the binary is running*, since the GOT resolves itself at runtime.
+You can use `got` to view the GOT table. *You can only do this when the binary is running*, since the GOT resolves at runtime.
 ```bash
 gef➤  got
 ```

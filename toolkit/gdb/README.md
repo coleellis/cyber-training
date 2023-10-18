@@ -4,6 +4,10 @@
 
 Nearly every challenge dissected in this guide used `gdb`, with a few exceptions.
 
+{% hint style="info" %}
+`gdb` has a *LOT* of features. This guide covers the ones that are most commonly used in everyday settings.  If you want to read more, check out [this summary guide](https://gist.github.com/integeruser/0c436a64e087b1c43b278761434cbbfa).
+{% endhint %}
+
 ## Installation
 
 Installation of `gdb` is extremely simple:

