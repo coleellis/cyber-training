@@ -1,3 +1,7 @@
+---
+description: Breakpoints, Watchpoints, Stack Traces, oh my!
+---
+
 # Stepping and Continuing Through Binaries
 
 This section is known as **dynamic analysis**.  Dynamic analysis is actively running the binary and observing its behavior.  This is done by watching the registers, the stack, and the instructions as they are executed.

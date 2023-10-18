@@ -1,3 +1,7 @@
+---
+description: Pre-running analysis of a binary.
+---
+
 # Static Analysis
 
 This section will cover the static analysis of a binary, including function disassembly, viewing the stack, and viewing the registers.
@@ -19,6 +23,10 @@ PIE                           : ✘
 Fortify                       : ✘ 
 RelRO                         : Partial
 ```
+
+{% hint style="warning" %}
+This is a GEF feature. Ensure you have GEF installed.
+{% endhint %}
 
 ## Listing Functions
 

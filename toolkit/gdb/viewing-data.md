@@ -1,4 +1,9 @@
+---
+description: Memory and Register Analysis. 
+---
+
 # Viewing Data
+
 Printing data is essential for understanding the contents of registers and memory.  This section will cover the various ways to print data in `gdb`.
 
 ## Summary Information
