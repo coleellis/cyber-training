@@ -11,10 +11,13 @@ We will use the `win32` binary for sample output.
 {% endhint %}
 
 ## Checking Security
+
 We can use `checksec` in `gdb` to get the security features.
+
 ```bash
 gef➤  checksec
 ```
+
 ```
 [+] checksec for '/home/joybuzzer/win32'
 Canary                        : ✘ 
@@ -31,9 +34,11 @@ This is a GEF feature. Ensure you have GEF installed.
 ## Listing Functions
 
 To view the list of available functions:
+
 ```bash
 gef➤  info functions
 ```
+
 ```as
 All defined functions:
 
@@ -59,9 +64,11 @@ Non-debugging symbols:
 ```
 
 `info functions` takes another optional argument: the function keyword to search for. This is useful for not bloating standard output if you want a single function's address.
+
 ```bash
 gef➤  info functions win
 ```
+
 ```as
 All functions matching regular expression "win":
 
@@ -70,12 +77,13 @@ Non-debugging symbols:
 ```
 
 {% hint style="info" %}
-Notice that the output says "*All functions matching regular expression*". This will find every function with the keyword `win` in it.  Functions like `winner` would also be printed.
+Notice that the output says, "_All functions matching regular expression_." This will find every function with the keyword `win` in it. Functions like `winner` would also be printed.
 {% endhint %}
 
 ## Disassembling Functions
 
 We can use the `disassemble` function to disassemble a function. So long as the binary can find the function, it will print the assembly code.
+
 {% hint style="success" %}
 `disassemble` can be abbreviated as `disas`.
 {% endhint %}
@@ -83,6 +91,7 @@ We can use the `disassemble` function to disassemble a function. So long as the 
 ```bash
 gef➤  disas win
 ```
+
 ```as
 Dump of assembler code for function win:
    0x080491a6 <+0>:	push   ebp
@@ -106,7 +115,8 @@ End of assembler dump.
 
 ### PLT Functions
 
-You don't need to list `@plt` for the PLT functions. In fact, they won't resolve if you do:
+You don't need to list `@plt` for the PLT functions. They won't resolve if you do:
+
 ```bash
 gef➤  disas system@plt
 No symbol table is loaded.  Use the "file" command.
@@ -119,9 +129,11 @@ Dump of assembler code for function system@plt:
 ```
 
 If the binary is running, `disas system` will output differently:
+
 ```bash
 gef➤  disas system
 ```
+
 ```as
 Dump of assembler code for function system:
    0xf7c48170 <+0>:	endbr32 
@@ -144,13 +156,16 @@ Dump of assembler code for function system:
 End of assembler dump.
 ```
 
-Why does this happen? When the binary is running, the PLT functions are resolved to their actual addresses. For more information, read [this page](/binex/07-aslr/README.md).
+Why does this happen? When the binary is running, the PLT functions are resolved to their actual addresses. For more information, read [this page](../../binex/07-aslr/).
 
 ### The GOT Table
-You can use `got` to view the GOT table. *You can only do this when the binary is running*, since the GOT resolves at runtime.
+
+You can use `got` to view the GOT table. _You can only do this when the binary is running_ since the GOT resolves at runtime.
+
 ```bash
 gef➤  got
 ```
+
 ```as
 GOT protection: Partial RelRO | GOT functions: 5
  

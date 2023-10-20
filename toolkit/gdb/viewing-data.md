@@ -1,18 +1,19 @@
 ---
-description: Memory and Register Analysis. 
+description: Memory and Register Analysis.
 ---
 
 # Viewing Data
 
-Printing data is essential for understanding the contents of registers and memory.  This section will cover the various ways to print data in `gdb`.
+Printing data is essential for understanding the contents of registers and memory. This section will cover the various ways to print data in `gdb`.
 
 ## Summary Information
 
-There are a number of summary commands we can use to see lots of data at one time.  A few of these commands are shadowed by GEF's preview pane, but they are still useful to know.
+We can use various summary commands to see lots of data simultaneously. GEF's preview pane shadows a few of these commands, but they are still useful to know.
 
 ### `info registers`
 
 This command shows all the available registers and their current value.
+
 ```bash
 gef➤  info registers
 eax            0x804923c           0x804923c
@@ -41,7 +42,8 @@ k6             0x0                 0x0
 k7             0x0                 0x0
 ```
 
-GEF provides a similar command, `registers`, outputs the registers that it shows in the GEF output.  It's output is a bit more verbose and only shows the most important registers.
+GEF provides a similar command, `registers`, outputs the registers that it shows in the GEF output. Its output is a bit more verbose and only shows the most important registers.
+
 ```bash
 gef➤  registers
 $eax   : 0x0804923c  →  <main+0> push ebp
@@ -57,7 +59,8 @@ $eflags: [ZERO carry PARITY adjust sign trap INTERRUPT direction overflow resume
 $cs: 0x23 $ss: 0x2b $ds: 0x2b $es: 0x2b $fs: 0x00 $gs: 0x63 
 ```
 
-`registers` takes an optional argument to show only a subset of registers.  Remember that GDB uses `$` syntax for registers.
+`registers` takes an optional argument to show only a subset of registers. Remember that GDB uses `$` syntax for registers.
+
 ```bash
 gef➤  registers $eip $esp $edi
 $esp   : 0xffffd698  →  0xf7ffd020  →  0xf7ffda40  →  0x00000000
@@ -67,7 +70,8 @@ $eip   : 0x0804923f  →  <main+3> and esp, 0xfffffff0
 
 ### `info frame`
 
-This gives us extra details on the stack frame.  This is not a command I commonly use because GEF provides a lot of this information in the GEF output.
+This gives us extra details on the stack frame. I do not commonly use this command because GEF provides a lot of this information in the GEF output.
+
 ```bash
 gef➤  info frame
 Stack level 0, frame at 0xffffd6a0:
@@ -80,7 +84,7 @@ Stack level 0, frame at 0xffffd6a0:
 
 ### `info proc mappings` and `elf-info`
 
-This is one of the most useful commands in this section. It shows us the memory mappigns for the process.  This is useful for understanding the memory sections, where data is allocated, and the permissions of each section.
+This is one of the most useful commands in this section. It shows us the memory mappings for the process. This is useful for understanding the memory sections, where data is allocated, and the permissions of each section.
 
 GEF's `elf-info` provides more detailed information on the binary's segments. This includes the `got` and `plt` locations as well as the `.text`, `.data`, and `.bss` sections.
 
@@ -160,7 +164,8 @@ Remember, this function only works during runtime.
 
 ### `info variables`
 
-This command shows us the global variables in the program.  This is useful for understanding the layout of the program and where data is stored.  There is a lot of bloat in this output because the binary automatically includes a lot of variables for the C runtime.
+This command shows us the global variables in the program. This is useful for understanding the program's layout and where data is stored. There is a lot of bloat in this output because the binary automatically includes a lot of variables for the C runtime.
+
 ```bash
 gef➤  info variables
 All defined variables:
@@ -191,7 +196,8 @@ Remember, this function only works during runtime.
 
 ### `info functions`
 
-We use this command every time we open a binary to see the available functions.
+We use this command whenever we open a binary to see the available functions.
+
 ```bash
 gef➤  info functions
 All defined functions:
@@ -222,14 +228,18 @@ If you run this command at runtime, every function from the C runtime will be in
 {% endhint %}
 
 ## Printing Data
+
 The `print` command (`p` for short) is the driving force behind examining data. It allows us to print the value of an **expression**.
+
 ```bash
 gef➤  print 0x10-0x8
 $1 = 0x8
 ```
 
 ### Examining Memory
-We can use the `x` command to examine memory.  It takes an address or register as its argument:
+
+We can use the `x` command to examine memory. It takes an address or a register as its argument:
+
 ```bash
 gef➤  x $esp
 0xffffd640:	0xffffd658
@@ -237,12 +247,14 @@ gef➤  x 0xffffd640
 0xffffd640:	0xffffd658
 ```
 
-There are three formatting parameters formatted like so: `x/NFU <ADDRESS>`.  The three format parameters are:
-* `N`: *The repeat count*. The repeat count is the number of times to repeat the format. This is used to print arrays (or large amounts of data from the stack or heap).
-* `F`: *The display format*. The display format is how to display the data. The default is hexademical (`x`).  The types available are `x` (hex), `d` (decimal), `u` (unsigned), `o` (octal), `t` (binary), `f` (float), `a` (address), `c` (char), `s` (string), and `i` (instruction).
-* `U`: *The unit size*. The unit size is the size of each block.  The four types are `b` (byte), `h` (halfword), `w` (word), and `g` (giant, 8 bytes).  The default is word-size (`w`).  32-bit binaries used `w`-sized data and 64-bit uses `g`-sized data.
+There are three formatting parameters formatted like so: `x/NFU <ADDRESS>`. The three format parameters are:
+
+* `N`: _The repeat count_. The repeat count is the number of times to repeat the format. This is used to print arrays (or large amounts of data from the stack or heap).
+* `F`: _The display format_. The display format is how to display the data. The default is hexadecimal (`x`). The types available are `x` (hex), `d` (decimal), `u` (unsigned), `o` (octal), `t` (binary), `f` (float), `a` (address), `c` (char), `s` (string), and `i` (instruction).
+* `U`: _The unit size_. The unit size is the size of each block. The four types are `b` (byte), `h` (halfword), `w` (word), and `g` (giant, 8 bytes). The default is word size (`w`). 32-bit binaries used `w`-sized data and 64-bit uses `g`-sized data.
 
 Here is this in action in two common use cases:
+
 ```bash
 # in 32-bit (understanding passed parameters)
 gef➤  x/20wx $esp
@@ -275,16 +287,20 @@ Ensure you're comfortable doing this. This is the crux of dynamic analysis with 
 {% endhint %}
 
 ### Searching Memory
+
 There are two major commands for finding data in memory: `find` and `search-pattern`.
 
 ### `find`
+
 `find` is built into GDB directly and is used for finding expressions within memory. The format of the `find` command is `find [/UN] start, +len|end, expr1 [, expr2, ...]`.
-* `/UN`: *Unit size and number flags*.  These are the same flags you would use with `x`.
-* `start`: *Start address*. Where to start searching.
-* `+len|end`: *End of search*. You can specify a number of bytes to search or an end address.  Address are inclusive by default.
-* `expr1`: *Expression*. This is the expression to search for.
+
+* `/UN`: _Unit size and number flags_. These are the same flags you would use with `x`.
+* `start`: _Start address_. Where to start searching.
+* `+len|end`: _End of search_. You can specify a number of bytes to search or an end address. Addresses are inclusive by default.
+* `expr1`: _Expression_. This is the expression to search for.
 
 In action:
+
 ```bash
 gef➤  find 0x08049000, +0x1000, "/bin/sh"
 Pattern not found.
@@ -296,7 +312,9 @@ gef➤  find 0x08049000, +0x1000, 0xc3
 ```
 
 ### `search-pattern`
-`search-pattern` is a GEF command used for finding strings.  It takes a string argument and searches across the binary and loaded libraries for all instances of the string.
+
+`search-pattern` is a GEF command used for finding strings. It takes a string argument and searches across the binary and loaded libraries for all instances of the string.
+
 ```bash
 gef➤  search-pattern "/bin/cat flag.txt"
 [+] Searching '/bin/cat flag.txt' in memory
@@ -310,6 +328,7 @@ gef➤  search-pattern /bin/sh
 ```
 
 `search-pattern` can also search based on endianness and can restrict search in only a certain part of memory.
+
 ```bash
 gef➤  search-pattern /bin/sh little 0x0-0x80500000
 [+] Searching '/bin/sh' in 0x0-0x80500000
