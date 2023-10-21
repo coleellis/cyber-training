@@ -147,22 +147,39 @@ Let's understand why this works.
 * `ret` continues our control of the return pointer in the same way we controlled it prior.
 * The lack of further instructions improves our chances of not overwriting data that will cause the program to crash.
 
-How do we find gadgets? There are two popular choices for programs that find gadgets: **`ropper`** and **`ROPgadget`**. Both are equally useful, and I often find myself using them interchangeably. For continuity sake, I will stick to `ROPgadget`. For this binary, I will show both functions.
+How do we find gadgets? There are two popular choices for programs that find gadgets: **`ropper`** and **`ROPgadget`**. Both are equally useful, and I often find myself using them interchangeably. I have provided both program syntax and output; you can choose your personal preference.
 
 To show all gadgets, we can use:
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
-$ ropper -f split
 $ ROPgadget --binary split
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+```bash
+$ ropper -f split
+```
+{% endtab %}
+{% endtabs %}
 
 This will show a long list of every gadget that the libraries can find. We can filter this one of a few ways:
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
-$ ropper -f split | grep rdi
-$ ROPgadget --binary split | grep rdi
 $ ROPgadget --binary split --only "pop|ret"
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+```bash
+$ ropper -f split | grep rdi
+```
+{% endtab %}
+{% endtabs %}
 
 The third instruction is `ROPgadget` exclusive, and lets you only show binaries with specific instruction sets. Based on all these instructions, we should find the following gadget:
 
@@ -176,12 +193,20 @@ The left is the address of the instruction, and the right is the gadget. This is
 
 `gdb` makes this process super easy. Since the string is hardcoded, we can just search for it in memory. We can do this with the `search-pattern`:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  search-pattern "/bin/cat flag.txt"
 [+] Searching '/bin/cat flag.txt' in memory
 [+] In '/home/joybuzzer/Documents/vunrotc/public/binex/05-rop/split/src/split'(0x601000-0x602000), permission=rw-
   0x601060 - 0x601071  →   "/bin/cat flag.txt" 
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 This shows us the string is at `0x601060`.
 

@@ -45,6 +45,8 @@ We need to find gadgets that load `rdi`, `rsi`, and `rdx`. We want our gadgets t
 
 We'll start by just looking for popping gadgets using the following:
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
 $ ROPgadget --binary callme --only "pop|ret"
 Gadgets information
@@ -66,6 +68,14 @@ Gadgets information
 
 Unique gadgets found: 14
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+
+{% endtab %}
+{% endtabs %}
+
+
 
 We conveniently find the following gadget, which does everything we need:
 
@@ -199,6 +209,7 @@ $
 [*] Closed connection to vunrotc.cole-ellis.com port 5300
 ```
 
+## Full Exploit
 Here is the full exploit:
 
 {% code title="exploit.py" lineNumbers="true" %}

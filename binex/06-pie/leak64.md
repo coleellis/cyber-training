@@ -17,6 +17,8 @@ Since this is the same binary as the last one, just compiled in 64-bit, we will 
 
 First, we need to find a leakable address on the stack. We'll use `gdb` to do this because, in 64-bit, it's often a high-valued offset.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/10gx $rsp
 0x7fffffffe3c0:	0x7025207025207025	0x2520702520702520
@@ -25,13 +27,27 @@ gef➤  x/10gx $rsp
 0x7fffffffe3f0:	0x00007fffffffe400	0x00005555555552ba
 0x7fffffffe400:	0x0000000000000001	0x00007ffff7c29d90
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We like the 8th value on the stack because it matches the format of the instructions nearby. If we check where it is:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/wx 0x00005555555552ba
 0x5555555552ba <main+18>:	0x000000b8
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 This is our return pointer to `main()`! We can choose to leak this value and then overwrite it later. Our offset for the format string is going to be `13`.
 

@@ -37,6 +37,8 @@ That leaves `read_in`. We notice the following:
 
 Moving to the `gets` call that supplies the input to the format string vulnerability, we can quickly get the offset to the canary:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/20wx $esp
 0xffffd550:	0xffffd560	0x00000014	0x00000000	0x080491d2
@@ -45,9 +47,17 @@ gef➤  x/20wx $esp
 0xffffd580:	0xf7fbe4a0	0xf7fd6f80	0xf7c184be	0xf7fbe4a0
 0xffffd590:	0xffffd5d0	0xf7fbe66c	0xf7fbeb20	0xbc53b400
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see the canary is at the 19th offset on the stack. If we want to do this mathematically, the canary is at `ebp-0xc`, and the stack pointer is at `esp`. We can do this math inside `gdb`:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  p/x $esp
 $3 = 0xffffd550
@@ -56,6 +66,12 @@ $4 = 0xffffd59c
 gef➤  python print((0xffffd59c-0xffffd550)/4)
 19.0
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 The reason that we divide by four is that each address is four bytes long.
 

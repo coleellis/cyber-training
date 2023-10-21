@@ -38,6 +38,8 @@ Let's step through `gdb` and see what we can find.
 
 We first notice there is no `win()` function. However, `system@plt` is in the binary, meaning we'll most likely need to call that ourselves. We did something like this in the ROP challenges. We will need an argument to pass to `system()`, which is usually either `/bin/sh` or `cat flag.txt`. If we check for either of those already being in the binary:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```bash
 gef➤  search-pattern "/bin/sh"
 [+] Searching '/bin/sh' in memory
@@ -46,6 +48,12 @@ gef➤  search-pattern "/bin/sh"
 gef➤  search-pattern "cat flag.txt"
 [+] Searching 'cat flag.txt' in memory
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 `/bin/sh` is in memory! This means we just need to pass its address into `system()` and we'll achieve a shell.
 
@@ -64,6 +72,8 @@ If we check `read_in`, there is a call to `printf`. Before this call, there are 
 
 If we check the data that is in the top two entries of the stack:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/2wx $esp
 0xffffd550:	0x56557008	0xf7c48150
@@ -72,6 +82,12 @@ gef➤  x/s 0x56557008
 gef➤  x/wx 0xf7c48150
 0xf7c48150 <system>:	0xfb1e0ff3
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see that this print statement is printing the address of `system()`! Since this function resides in the `libc` binary, this means that we can use it to leak `libc`.
 

@@ -61,21 +61,37 @@ When using breakpoints on a binary with PIE enabled, they **must** be an offset 
 
 Also, we can't check _those_ specific addresses because PIE is enabled. We need to check the addresses shown on each specific run. To do this, put a breakpoint at the vulnerable `printf` call and check the stack.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/10wx $esp
 0xffffd580:	0xffffd598	0x00000000	0x01000000	0x565561f9
 0xffffd590:	0xf7fc4540	0x00000000	0x25207025	0x70252070
 0xffffd5a0:	0x20702520	0x25207025
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 The first address is the address of the format string. We start counting from the second item (which reads `(nil)` in the standard output). We want the third and fourth options, which also have the same high bytes.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/wx 0x565561f9
 0x565561f9 <read_in+12>:	0x2dc7c381
 gef➤  x/wx 0xf7fc4540
 0xf7fc4540 <__kernel_vsyscall>:	0x89555251
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 Aha! The third value resolves to `read_in + 12`, which happens to be the base pointer for `read_in`. The fourth value resolves to `__kernel_vsyscall`, which is a function in the kernel. The first one is more useful, so we use that.
 

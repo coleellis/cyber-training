@@ -93,7 +93,7 @@ We need three things to perform an arbitrary write:
 
 We figured out the first one already! We determined that our input started at the 7th position. Now we need the address of where we want to write. There are two ways to do this:
 
-1. Use the list of global variables in `gdb`: `info variables`
+1. Use the list of global variables in `gdb`: `info variables` (`is` in `radare2`)
 2. Use the symbol table, accessible with `readelf -s <binary>`
 
 Either way, we get that `auth` is located at `0x0804c02c`. Finally, we know that we want to write 10 bytes, meaning that before we place the `%n`, we need to write 10 bytes.

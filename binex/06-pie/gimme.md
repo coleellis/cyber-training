@@ -40,12 +40,20 @@ Now, let's discuss the `read_in` function. We can start dissecting each call and
 
 Checking what's at the address pushed addresses:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/s $ebx-0x1fc0
 0x56557008:	"Main function is at: %lx\n"
 gef➤  x/wx $ebx-0x2dfb
 0x565561cd <main>:	0x83e58955
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see that the first call to `printf` is printing the address of `main`. After this, there is a `gets` call to a `0x30` byte buffer.
 

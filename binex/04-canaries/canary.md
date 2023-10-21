@@ -105,6 +105,8 @@ There are two ways to find the offset on the stack that the canary is stored at:
 
 The first one is by far easier and more practical.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  canary
 [+] The canary of process 44910 is at 0xffffd80b, value is 0x8fdba200
@@ -120,6 +122,12 @@ gef➤  x/40wx $esp
 0xffffd5b0:	0xffffd82e	0x00000070	0xf7ffd000	0xf7c21519
 0xffffd5c0:	0x00000001	0xffffd674	0xffffd67c	0xffffd5e0
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 `gdb` tells us that the canary is at `0xffffd80b`. If we count from our location to the canary, we see that it is 23 DWORDs away. We can verify this using the format string:
 

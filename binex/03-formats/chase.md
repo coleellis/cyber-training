@@ -53,10 +53,18 @@ Our first significant call is to `fopen()`. Based on the `man` pages, we know th
 
 Using `gdb`, we can check the arguments:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 (gdb) disas *(main+49)
 (gdb) r
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 `gef` will predict the arguments for us:
 
@@ -71,6 +79,8 @@ fopen@plt (
 
 If we didn't have `gef`, we could check the stack:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/2wx $esp
 0xffffd4f0:	0x0804a00a	0x0804a008
@@ -79,6 +89,12 @@ gef➤  x/s 0x0804a00a
 gef➤  x/s 0x0804a008
 0x804a008:	"r"
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 `fopen()` returns a `FILE*`, which is eventually stored on the stack at `ebp-0xc`. There's a check afterward to make sure that its value is not `NULL`, but we can ignore that for now.
 
@@ -131,12 +147,20 @@ None of the `puts()` calls are really important to us, so we're going to skip th
 
 The first argument is the address of `ebp-0xd4`, which is where we are writing. The second argument is clearly `0x64`. The third argument is the value at `ebx-0x4`.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/3wx $esp
 0xffffd4f0:	0xffffd504	0x00000064	0xf7e2a620
 gef➤  x/wx 0xf7e2a620
 0xf7e2a620 <_IO_2_1_stdin_>:	0xfbad2088
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see that the third argument is `stdin`, which makes sense because we've been looking for a function that takes keyboard input.
 
@@ -176,6 +200,8 @@ You can answer this question by running it. After a certain number of format str
 
 We can use `gdb` to find the flag. If we put the instruction pointer right before the `fgets()` call that takes from `stdin`, we can see what's on the stack when we enter the format strings.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/40wx $esp
 0xffffd4f0:	0xffffd504	0x00000064	0xf7e2a620	0x080491e0
@@ -189,13 +215,27 @@ gef➤  x/40wx $esp
 0xffffd570:	0x61726f70	0x665f7972	0x7d67616c	0xf7fc000a
 0xffffd580:	0xf7ffd608	0x00000020	0x00000000	0xffffd780
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 Here's why we use `flag{temporary_flag}` as the contents of _flag.txt_. `flag` in hex is `0x67616c66`. We see that it starts at `0xffffd568`, which we can verify:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/s 0xffffd568
 0xffffd568:	"flag{temporary_flag}\n"
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We count that this starts at the 30th word on the stack. We can verify this using the format specifier in our input:
 

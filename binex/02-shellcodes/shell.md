@@ -42,10 +42,18 @@ We use the same shellcode because the code follows the same architecture. We kno
 
 The main difference is getting the address to jump. Unlike `location`, we are not provided this address. However, we discussed earlier that the address is statically chosen, meaning we have a tactical advantage. By looking in `gdb` at the location the binary chooses for writing, we have the address.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  p/x $ebp-0x134
 $1 = 0xffffd484
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We use this for our address we jump to. This makes the payload:
 

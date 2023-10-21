@@ -10,12 +10,20 @@ This binary is similar to the last one, so we'll be reusing most of the same tec
 
 ### Getting our Gadget
 
-We'll do this the same way that we did it in the ROP chapter. We use `ROPgadget` to search for a gadget that will pop the top of the stack into `rdi`:
+We'll do this the same way that we did it in the ROP chapter. We use `ROPgadget` or `ropper` to search for a gadget that will pop the top of the stack into `rdi`:
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
 $ ROPgadget --binary stepup | grep "pop rdi"
 0x00000000004011db : pop rdi ; ret
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+
+{% endtab %}
+{% endtabs %}
 
 This is perfect. We'll use this gadget to pop the address of `/bin/sh` into `rdi` before calling `system()`.
 

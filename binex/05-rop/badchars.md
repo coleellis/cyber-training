@@ -28,6 +28,8 @@ Combing through `gdb` / `radare2`, we can check for our goal in the binary. We n
 
 To do this, we need to gadget hunt to find our available maneuvers. We must remember we can't write _x_, _g_, _a_, or _._ in our input.
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
 $ ROPgadget --binary badchars --only "pop|ret"
 Gadgets information
@@ -45,9 +47,17 @@ Gadgets information
 0x00000000004004ee : ret
 0x0000000000400293 : ret 0xb2ec
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+
+{% endtab %}
+{% endtabs %}
 
 These are a good start. To write to memory, we will need a `mov` gadget that writes to a `QWORD PTR` from a register.
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
 $ ROPgadget --binary badchars --only "mov|ret"
 Gadgets information
@@ -57,6 +67,12 @@ Gadgets information
 0x00000000004004ee : ret
 0x0000000000400293 : ret 0xb2ec
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+
+{% endtab %}
+{% endtabs %}
 
 We opt for the second gadget rather than the first because we can write all `8` bytes rather than `4` at a time. We'll take note that we need a `pop r12` and `pop r13` gadget, which we have:
 
@@ -68,6 +84,8 @@ Now comes the kicker. We need a way to modify the data. The most common solution
 
 Let's hunt for a `xor` gadget:
 
+{% tabs %}
+{% tab title="ROPgadget" %}
 ```bash
 $ ROPgadget --binary badchars --only "xor|ret"
 Gadgets information
@@ -77,6 +95,12 @@ Gadgets information
 0x0000000000400628 : xor byte ptr [r15], r14b ; ret
 0x0000000000400629 : xor byte ptr [rdi], dh ; ret
 ```
+{% endtab %}
+
+{% tab title="ropper" %}
+
+{% endtab %}
+{% endtabs %}
 
 We'll take the third one. This gadget does a byte-wise `xor` of the contents of `r15` with `r14`b. `r14b` is the lowest byte of `r14`. This won't prove problematic; we already plan on using a small number to `xor`, so as long as it's a byte long, we're good.
 

