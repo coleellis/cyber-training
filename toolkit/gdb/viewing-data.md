@@ -82,9 +82,11 @@ Stack level 0, frame at 0xffffd6a0:
   ebp at 0xffffd698, eip at 0xffffd69c
 ```
 
-### `info proc mappings` and `elf-info`
+### `info proc mappings`, `vmmap`, and `elf-info`
 
 This is one of the most useful commands in this section. It shows us the memory mappings for the process. This is useful for understanding the memory sections, where data is allocated, and the permissions of each section.
+
+GEF's `vmmap` performs the same function as `info proc mappings`, but provides a slightly cleaner output.  `vmmap` also takes an address argument and will resolve the address to a section.
 
 GEF's `elf-info` provides more detailed information on the binary's segments. This includes the `got` and `plt` locations as well as the `.text`, `.data`, and `.bss` sections.
 
@@ -117,6 +119,35 @@ Mapped address spaces:
 	0xf7ffb000 0xf7ffd000     0x2000    0x34000  r--p   /usr/lib/i386-linux-gnu/ld-linux.so.2
 	0xf7ffd000 0xf7ffe000     0x1000    0x36000  rw-p   /usr/lib/i386-linux-gnu/ld-linux.so.2
 	0xfffdd000 0xffffe000    0x21000        0x0  rwxp   [stack]
+```
+{% endtab %}
+
+{% tab title="vmmap" %}
+```bash
+gef➤  vmmap
+[ Legend:  Code | Heap | Stack ]
+Start      End        Offset     Perm Path
+0x08048000 0x08049000 0x00000000 r-- /home/joybuzzer/args
+0x08049000 0x0804a000 0x00001000 r-x /home/joybuzzer/args
+0x0804a000 0x0804b000 0x00002000 r-- /home/joybuzzer/args
+0x0804b000 0x0804c000 0x00002000 r-- /home/joybuzzer/args
+0x0804c000 0x0804d000 0x00003000 rw- /home/joybuzzer/args
+0xf7c00000 0xf7c20000 0x00000000 r-- /usr/lib/i386-linux-gnu/libc.so.6
+0xf7c20000 0xf7da2000 0x00020000 r-x /usr/lib/i386-linux-gnu/libc.so.6
+0xf7da2000 0xf7e27000 0x001a2000 r-- /usr/lib/i386-linux-gnu/libc.so.6
+0xf7e27000 0xf7e28000 0x00227000 --- /usr/lib/i386-linux-gnu/libc.so.6
+0xf7e28000 0xf7e2a000 0x00227000 r-- /usr/lib/i386-linux-gnu/libc.so.6
+0xf7e2a000 0xf7e2b000 0x00229000 rw- /usr/lib/i386-linux-gnu/libc.so.6
+0xf7e2b000 0xf7e35000 0x00000000 rw- 
+0xf7fbe000 0xf7fc0000 0x00000000 rw- 
+0xf7fc0000 0xf7fc4000 0x00000000 r-- [vvar]
+0xf7fc4000 0xf7fc6000 0x00000000 r-x [vdso]
+0xf7fc6000 0xf7fc7000 0x00000000 r-- /usr/lib/i386-linux-gnu/ld-linux.so.2
+0xf7fc7000 0xf7fec000 0x00001000 r-x /usr/lib/i386-linux-gnu/ld-linux.so.2
+0xf7fec000 0xf7ffb000 0x00026000 r-- /usr/lib/i386-linux-gnu/ld-linux.so.2
+0xf7ffb000 0xf7ffd000 0x00034000 r-- /usr/lib/i386-linux-gnu/ld-linux.so.2
+0xf7ffd000 0xf7ffe000 0x00036000 rw- /usr/lib/i386-linux-gnu/ld-linux.so.2
+0xfffdd000 0xffffe000 0x00000000 rwx [stack]
 ```
 {% endtab %}
 

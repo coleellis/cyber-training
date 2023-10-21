@@ -5,7 +5,7 @@ description: Understanding security measures in the debugged environment.
 # Security Measures, Illustrated
 These commands are useful for further dissection of the security measures placed on the binary.
 
-### `checksec`
+## `checksec`
 The `checksec` command is inspired from the `checksec` used on the command line. It's a convenient way to check security within `gdb`.
 ```bash
 gef➤  checksec
@@ -19,7 +19,7 @@ RelRO                         : Partial
 
 **Fortify** is a security feature we haven't seen yet; it's a compile-time feature that adds extra checks to detect buffer overflows.  I haven't written any articles on this yet, but you can read more about it [here](https://developers.redhat.com/articles/2022/09/17/gccs-new-fortification-level#2__better_fortification_coverage).
 
-### `canary`
+## `canary`
 The `canary` tool is one of my favorite GEF tools and what sets it apart from the other `gdb` extensions.  This command finds the canary value and prints its location and value.
 ```bash
 gef➤  canary
@@ -38,7 +38,7 @@ gef➤  x/28wx $esp
 0xffffd5d0:	0xffffd610	0x0804c000	0xffffd5e8	0x080492b8
 ```
 
-### `aslr`
+## `aslr`
 You can enable or disable ASLR on the debugged binary.  Remember that this is internal GEF setting and does not affect ASLR on the kernel.  Since we never know if ASLR is running on a remote binary, we should assume it is on.
 ```bash
 gef➤  aslr
@@ -53,7 +53,7 @@ gef➤  aslr off
 This will not work on a process which was loaded and `gdb` was then attached.  You must initiate the process using `gdb`.
 {% endhint %}
 
-### `pie`
+## `pie`
 The `pie` command is used when handling position-independent executables (PIE enabled). It provides a series of commands to use in place of the typical `gdb` commands that automatically resolve absolute addresses for the run.
 
 Use `pie breakpoint <offset>` to set a breakpoint.  It can be used like the normal `b` command in `gdb` and will automatically resolve the address.
