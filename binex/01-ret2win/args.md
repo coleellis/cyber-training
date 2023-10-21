@@ -27,6 +27,8 @@ All the security features are still disabled.
 
 Checking the functions list:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  info functions
 All defined functions:
@@ -51,9 +53,17 @@ Non-debugging symbols:
 0x08049254  __x86.get_pc_thunk.ax
 0x08049258  _fini
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 If we check `read_in()` and `main()`, we'll see that the two methods are identical. Let's check `win()`.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  disas win
 Dump of assembler code for function win:
@@ -82,6 +92,12 @@ Dump of assembler code for function win:
    0x080491ed <+71>:	leave  
    0x080491ee <+72>:	ret   
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 The most glaring part of this function is the call to `cmp`, a comparison function. `cmp` is used in assembly to manage `if` statements.
 
@@ -149,6 +165,8 @@ puts@plt (
 
 What is happening? Checking the stack frame at the time of the `cmp` call shows us:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/20wx $esp
 0xffdcb134:	0x41414141	0x41414141	0x41414141	0xdeadbeef
@@ -159,6 +177,12 @@ gef➤  x/20wx $esp
 gef➤  x/wx $ebp+0x8
 0xffdcb144:	0x00000000
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We're off by one chunk? _Why is that?_ Since we're jumping to `win()` by changing the value of the return pointer, rather than going there via `call win`, a return pointer is never pushed on the stack. However, since the code doesn't expect us to do this, it treats the stack as if there still is one.
 

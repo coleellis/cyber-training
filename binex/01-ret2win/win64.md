@@ -34,6 +34,8 @@ We see no protections on the binary, so ret2win is probably a good solution. Her
 
 Unsurprisingly, checking the functions list yields us the same result as `win32`:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  info functions
 All defined functions:
@@ -56,9 +58,16 @@ Non-debugging symbols:
 0x000000000040121b  usefulGadgets
 0x000000000040122c  _fini
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+{% endtab %}
+{% endtabs %}
 
 We're going straight to `read_in` because we know the contents of `win` and `main` aren't relevant to us.
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  disas read_in
 Dump of assembler code for function read_in:
@@ -80,6 +89,13 @@ Dump of assembler code for function read_in:
    0x00000000004011f1 <+60>:	leave  
    0x00000000004011f2 <+61>:	ret  
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+{% endtab %}
+{% endtabs %}
+
+
 
 We see that this is formatted very similar to the `win32` binary, so it shouldn't be that scary.
 
@@ -117,10 +133,19 @@ If we check the last data that was passed to `rdi` before `gets` is called, this
 
 Getting the offset is the same in 64-bit as 32-bit. Let's put a breakpoint right before the call so we can inspect the stack:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  b *(read_in+54)
 gef➤  run
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
+
 
 Find the address of the return pointer by checking the instruction after the `call` to `read_in`:
 
@@ -133,6 +158,8 @@ Our return pointer is `0x401205`.
 
 Let's check what's on the stack:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/10gx $rsp
 0x7fffffffe450:	0x0000000000000000	0x0000000000000000
@@ -141,20 +168,43 @@ gef➤  x/10gx $rsp
 0x7fffffffe480:	0x00007fffffffe490	0x0000000000401205
 0x7fffffffe490:	0x0000000000000001	0x00007ffff7c29d90
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 We see that the return pointer is there:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  x/gx 0x7fffffffe488
 0x7fffffffe488:	0x0000000000401205
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
+
 
 Checking `rdi` shows us where we will start writing:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  p/x $rdi
 $1 = 0x7fffffffe450
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 Let's see how many bytes that we need to write to reach here:
 
@@ -254,6 +304,8 @@ This is known as the **`movaps` fault**. This happens because `movaps` expects t
 
 How can we fix this? We can add `8` bytes to the payload, which will make it `64` bytes (which is a multiple of `16`). The standard solution for this is to _divert to another return_, which will effectively add `8` bytes to the payload and not affect the rest of the execution. Let's find another `ret` to divert to. It doesn't matter which you pick, I randomly chose the one inside `deregister_tm_clones`:
 
+{% tabs %}
+{% tab title="GDB" %}
 ```as
 gef➤  disas deregister_tm_clones
 Dump of assembler code for function deregister_tm_clones:
@@ -268,6 +320,12 @@ Dump of assembler code for function deregister_tm_clones:
    0x000000000040110e <+30>:	xchg   ax,ax
    0x0000000000401110 <+32>:	ret  
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
+{% endtabs %}
 
 The address of this return is `0x401110`. Let's add this to our payload:
 
