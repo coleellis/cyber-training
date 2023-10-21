@@ -75,7 +75,7 @@
   * [Viewing Data](toolkit/gdb/viewing-data.md)
   * [GEF Features](toolkit/gdb/gef/README.md)
     * [Ease of Use](toolkit/gdb/gef/ease-of-use.md)
-    * [Security Measuresd](toolkit/gdb/gef/security.md)
+    * [Security Measures](toolkit/gdb/gef/security.md)
     * [Memory Analysis](toolkit/gdb/gef/memory-analysis.md)
     * [Debugging UI](toolkit/gdb/gef/debugging-ui.md)
     * [Exploit Development](toolkit/gdb/gef/exploit-dev.md)
