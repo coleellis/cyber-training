@@ -5,7 +5,7 @@
 Nearly every challenge dissected in this guide used `gdb`, with a few exceptions.
 
 {% hint style="info" %}
-`gdb` has a *LOT* of features. This guide covers the ones that are most commonly used in everyday settings.  If you want to read more, check out [this summary guide](https://gist.github.com/integeruser/0c436a64e087b1c43b278761434cbbfa).
+`gdb` has a _LOT_ of features. This guide covers the ones that are most commonly used in everyday settings. If you want to read more, check out [this summary guide](https://gist.github.com/integeruser/0c436a64e087b1c43b278761434cbbfa).
 {% endhint %}
 
 ## Installation
@@ -16,7 +16,7 @@ Installation of `gdb` is extremely simple:
 pip install gdb
 ```
 
-To extend its feature set, we will also install the `gdb-gef` extension. More information can be found [here](https://github.com/hugsy/gef). GEF allows live previews of the instruction set, the registers, and the stack. This allows us to easily do dynamic analysis of the binary.
+To extend its feature set, we will also install the `gdb-gef` extension. More information can be found [here](https://github.com/hugsy/gef). GEF allows live previews of the instruction set, the registers, and the stack. This allows us to easily do a dynamic analysis of the binary.
 
 To install GEF, use the following command:
 
