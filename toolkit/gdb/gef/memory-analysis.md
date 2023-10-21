@@ -3,10 +3,13 @@ description: Further analysis of memory segments.
 ---
 
 # Memory Analysis
-The commands here provide a better analysis of memory segments and the registers. 
+
+The commands here provide a better analysis of memory segments and the registers.
 
 ## `elf-info`
-`elf-info` (`elf` for short) provides basic information about the ELF file.  This is most useful for viewing memory segments, the entry point, and the ELF header.
+
+`elf-info` (`elf` for short) provides basic information about the ELF file. This is most useful for viewing memory segments, the entry point, and the ELF header.
+
 ```as
 gef➤  elf-info
 Magic                 : 7f 45 4c 46
@@ -72,7 +75,9 @@ Entry point           : 0x08049090
 ```
 
 ## `got`
+
 The `got` command prints the GOT table.
+
 ```bash
 gef➤  got
 
@@ -85,7 +90,8 @@ GOT protection: Partial RelRO | GOT functions: 5
 [0x804c01c] system@GLIBC_2.0  →  0x8049086
 ```
 
-`got` can apply filters to the output.  You can filter by symbol name and can also use more than one filter.
+`got` can apply filters to the output. You can filter by symbol name and can also use more than one filter.
+
 ```bash
 gef➤  got puts
 GOT protection: Partial RelRO | GOT functions: 5
@@ -98,19 +104,22 @@ GOT protection: Partial RelRO | GOT functions: 5
 ```
 
 {% hint style="info" %}
-The GOT table is resolved at runtime, therefore you can only use `got` at runtime.
+The GOT table is resolved at runtime. Therefore, you can only use `got` at runtime.
 {% endhint %}
 
 ## `heap`
+
 The `heap` command provides information on the heap chunks.
 
 Use `heap arenas` to view the heap arenas.
+
 ```bash
 gef➤  heap arenas
 Arena(base=0x7ffff7e19c80, top=0x5555555596d0, last_remainder=0x0, next=0x7ffff7e19c80)
 ```
 
 Use `heap chunks` to view the heap chunks.
+
 ```bash
 gef➤  heap chunks
 Chunk(addr=0x555555559010, size=0x290, flags=PREV_INUSE | IS_MMAPPED | NON_MAIN_ARENA)
@@ -129,10 +138,13 @@ Since this guide doesn't cover heap exploits, I won't go into detail about the h
 {% endhint %}
 
 ## `dereference`
-The `dereference`  (`deref` for short) command provides similar output to the Stack section of `context`.  It takes three optional arguments:
+
+The `dereference` (`deref` for short) command provides similar output to the Stack section of `context`. It takes three optional arguments:
+
 * A start address, symbol, or register (by default, `$sp`)
 * The number of consecutive addresses to reference
 * The base location for offset (by default, the start address)
+
 ```bash
 gef➤  deref
 0xffffd640│+0x0000: 0xffffd658  →  0xf7c184be  →  "_dl_audit_preinit"	 ← $esp
@@ -148,6 +160,7 @@ gef➤  deref
 ```
 
 With arguments:
+
 ```bash
 gef➤  deref $esp -l 7 -r $ebp
 0xffffd640│-0x0048: 0xffffd658  →  0xf7c184be  →  "_dl_audit_preinit"	 ← $esp
@@ -160,7 +173,9 @@ gef➤  deref $esp -l 7 -r $ebp
 ```
 
 ## `registers`
-The `registers` command is a wrapper for `info registers`.  It shows the current state of the registers in the same format it is printed in `context`.
+
+The `registers` command is a wrapper for `info registers`. It shows the current state of the registers in the same format it is printed in `context`.
+
 ```bash
 gef➤  registers
 $eax   : 0xffffd228  →  0xf7c184be  →  "_dl_audit_preinit"
@@ -175,7 +190,9 @@ $eip   : 0x0804922e  →  0xfffe2de8  →  0x00000000
 $eflags: [zero carry PARITY ADJUST SIGN trap INTERRUPT direction overflow resume virtualx86 identification]
 $cs: 0x23 $ss: 0x2b $ds: 0x2b $es: 0x2b $fs: 0x00 $gs: 0x63 
 ```
+
 Like `info registers`, you can filter by register.
+
 ```bash
 gef➤  registers $eip $esi
 $eip   : 0x0804922e  →  0xfffe2de8  →  0x00000000
@@ -183,7 +200,9 @@ $esi   : 0xffffd324  →  0xffffd4ea  →  "/home/joybuzzer/args"
 ```
 
 ## `vmmap`
-`vmmap` performs an extended function to `info proc mappings`.  It shows all loaded memory segments.
+
+`vmmap` performs an extended function to `info proc mappings`. It shows all loaded memory segments.
+
 ```bash
 gef➤  vmmap
 [ Legend:  Code | Heap | Stack ]
@@ -211,7 +230,8 @@ Start      End        Offset     Perm Path
 0xfffdd000 0xffffe000 0x00000000 rwx [stack]
 ```
 
-`vmmap` also takes an optional argument.  It takes an address and will resolve that address to a certain memory segment.
+`vmmap` also takes an optional argument. It takes an address and will resolve that address to a certain memory segment.
+
 ```bash
 gef➤  x/wx $ebp-0x30
 0xffffd228:     0xf7c18400
@@ -221,9 +241,10 @@ Start      End        Offset     Perm Path
 0xfffdd000 0xffffe000 0x00000000 rwx [stack]
 ```
 
-
 ## `scan`
-`scan` searches for addresses of one memory region inside another region.  This is also known as *needle in haystack scanning*.
+
+`scan` searches for addresses of one memory region inside another region. This is also known as _needle-in-haystack scanning_.
+
 ```bash
 gef➤  scan stack libc
 [+] Searching for addresses in 'stack' that point to 'libc'
@@ -236,6 +257,7 @@ gef➤  scan stack libc
 ```
 
 You can check mappings without a path associated using an address range.
+
 ```bash
 gef➤  scan 0x555555554000-0x555555555000 libc
 [+] Searching for addresses in '0x555555554000-0x555555555000' that point to 'libc'
