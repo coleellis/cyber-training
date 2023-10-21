@@ -165,6 +165,10 @@ $ ropper -f split
 {% endtab %}
 {% endtabs %}
 
+{% hint style="info" %}
+Radare2 also supports finding gadgets. However, I find it to be less useful than the other two. When applicable, I show the Radare2 command as well.
+{% endhint %}
+
 This will show a long list of every gadget that the libraries can find. We can filter this one of a few ways:
 
 {% tabs %}
@@ -178,6 +182,10 @@ $ ROPgadget --binary split --only "pop|ret"
 ```bash
 $ ropper -f split | grep rdi
 ```
+{% endtab %}
+
+{% tab title="Radare2" %}
+
 {% endtab %}
 {% endtabs %}
 

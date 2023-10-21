@@ -52,6 +52,10 @@ Gadgets information
 {% tab title="ropper" %}
 
 {% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
 {% endtabs %}
 
 These are a good start. To write to memory, we will need a `mov` gadget that writes to a `QWORD PTR` from a register.
@@ -70,6 +74,10 @@ Gadgets information
 {% endtab %}
 
 {% tab title="ropper" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 
 {% endtab %}
 {% endtabs %}
@@ -98,6 +106,10 @@ Gadgets information
 {% endtab %}
 
 {% tab title="ropper" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 
 {% endtab %}
 {% endtabs %}

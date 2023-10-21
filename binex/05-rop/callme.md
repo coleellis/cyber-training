@@ -73,6 +73,10 @@ Unique gadgets found: 14
 {% tab title="ropper" %}
 
 {% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
 {% endtabs %}
 
 

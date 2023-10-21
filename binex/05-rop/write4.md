@@ -151,6 +151,10 @@ Gadgets information
 {% tab title="ropper" %}
 
 {% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
 {% endtabs %}
 
 This seems useful enough. This provides us a way to load the first two parameter registers, meaning that we can pass an address into `print_file`. We know that the end of our payload will look something like:
@@ -198,6 +202,10 @@ Unique gadgets found: 15
 {% endtab %}
 
 {% tab title="ropper" %}
+
+{% endtab %}
+
+{% tab title="Radare2" %}
 
 {% endtab %}
 {% endtabs %}

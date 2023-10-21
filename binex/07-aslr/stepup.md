@@ -23,6 +23,10 @@ $ ROPgadget --binary stepup | grep "pop rdi"
 {% tab title="ropper" %}
 
 {% endtab %}
+
+{% tab title="Radare2" %}
+
+{% endtab %}
 {% endtabs %}
 
 This is perfect. We'll use this gadget to pop the address of `/bin/sh` into `rdi` before calling `system()`.
