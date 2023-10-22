@@ -72,7 +72,12 @@ gef➤  x/10wx $esp
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x565a823e]> pxw 40 @ esp
+0xffd21c40  0x565a901a 0x00000000 0x01000000 0x565a81f9  ..ZV..........ZV
+0xffd21c50  0xf7f6e540 0x00000000 0x25207025 0x70252070  @.......%p %p %p
+0xffd21c60  0x20702520 0x25207025                         %p %p %
+```
 {% endtab %}
 {% endtabs %}
 
@@ -89,7 +94,12 @@ gef➤  x/wx 0xf7fc4540
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x565a823e]> pxw 4 @ 0x565a81f9
+0x565a81f9  0x2dc7c381                                   ...-
+[0x565a823e]> pxw 4 @ 0xf7f6e540
+0xf7f6e540  0x89555251                                   QRU.
+```
 {% endtab %}
 {% endtabs %}
 

@@ -30,7 +30,14 @@ gef➤  x/10gx $rsp
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x5614be16a233]> pxq 80 @ rsp
+0x7ffdca27c5c0  0x7025207025207025  0x2520702520702520   %p %p %p %p %p %
+0x7ffdca27c5d0  0x2070252070252070  0x7025207025207025   p %p %p %p %p %p
+0x7ffdca27c5e0  0x0000000000702520  0x0000000000000000    %p.............
+0x7ffdca27c5f0  0x00007ffdca27c600  0x00005614be16a2ba   ..'..........V..
+0x7ffdca27c600  0x0000000000000001  0x00007f0a5c829d90   ...........\....
+```
 {% endtab %}
 {% endtabs %}
 
@@ -45,7 +52,16 @@ gef➤  x/wx 0x00005555555552ba
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x5614be16a2ba]> afi. @ 0x00005614be16a2ba
+main
+[0x5614be16a2ba]> pdf @ main
+┌ 25: int main (int argc, char **argv, char **envp);
+│           0x5614be16a2a8      f30f1efa       endbr64
+│           0x5614be16a2ac      55             push rbp
+│           0x5614be16a2ad      4889e5         mov rbp, rsp
+│           0x5614be16a2b0      b800000000     mov eax, 0
+```
 {% endtab %}
 {% endtabs %}
 

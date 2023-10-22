@@ -51,7 +51,13 @@ gef➤  x/wx $ebx-0x2dfb
 {% endtab %}
 
 {% tab title="Radare2" %}
+```nasm
+[0x5661320c]> ps @ ebx-0x1fc0
+Main function is at: %lx
 
+[0x5661320c]> pxw 4 @ ebx-0x2dfb
+0x566131cd  0x83e58955                                   U...
+```
 {% endtab %}
 {% endtabs %}
 
