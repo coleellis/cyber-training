@@ -8,7 +8,7 @@ Binaries with PIE enabled are not impossible to exploit. The driving theory arou
 
 For example, consider the following functions list:
 
-```as
+```nasm
 0x000011cd  main
 0x000011e9  read_in
 0x0000123d  win

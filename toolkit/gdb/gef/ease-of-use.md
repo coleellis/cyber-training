@@ -9,13 +9,13 @@ There are a few commands `gdb` uses to make the debugging experience better. The
 GEF overrides the typical `gdb` aliasing mechanism (which is done via `alias`).
 
 Use `aliases add <alias> <command>` to add an alias. Use `aliases rm <alias>` to remove an alias.
-```bash
+```nasm
 gef➤  aliases add p64 x/gx
 gef➤  aliases rm p64
 ```
 
 Use `aliases ls` to view the current alias list.
-```bash
+```nasm
 gef➤  aliases ls 
 [+] Aliases defined:
 ctx                             →  context
@@ -54,7 +54,7 @@ Aliases are stored in `~/.gef.rc`. You can edit the aliases directly in this fil
 ## `config`
 This command shows the current GEF configuration. It reads from `~/.gef.rc` and the `gef` section of `~/.gdbinit`.
 
-```bash
+```nasm
 gef➤  gef config
 ─────────── GEF configuration settings ───────────
 assemble.default_architecture (str) = "X86"
@@ -80,13 +80,13 @@ You can set a value in this configuration with `gef config <key> <value>`. For e
 ### Changing the Configuration
 
 These changes are **temporary**.  You can restore the original configuration using:
-```bash
+```nasm
 gef➤  gef restore
 [+] Configuration from '/home/joybuzzer/.gef.rc' restored
 ```
 
 You can make permanent changes by editing `~/.gef.rc` or using `gef save`.
-```bash
+```nasm
 gef➤  gef save
 [+] Configuration saved to '/home/joybuzzer/.gef.rc'
 ```

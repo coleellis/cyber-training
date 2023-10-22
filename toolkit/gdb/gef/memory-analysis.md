@@ -10,7 +10,7 @@ The commands here provide a better analysis of memory segments and the registers
 
 `elf-info` (`elf` for short) provides basic information about the ELF file. This is most useful for viewing memory segments, the entry point, and the ELF header.
 
-```as
+```nasm
 gef➤  elf-info
 Magic                 : 7f 45 4c 46
 Class                 : 0x1 - ELF_32_BITS
@@ -78,7 +78,7 @@ Entry point           : 0x08049090
 
 The `got` command prints the GOT table.
 
-```bash
+```nasm
 gef➤  got
 
 GOT protection: Partial RelRO | GOT functions: 5
@@ -92,7 +92,7 @@ GOT protection: Partial RelRO | GOT functions: 5
 
 `got` can apply filters to the output. You can filter by symbol name and can also use more than one filter.
 
-```bash
+```nasm
 gef➤  got puts
 GOT protection: Partial RelRO | GOT functions: 5
 [0x804c018] puts@GLIBC_2.0  →  0xf7c732a0
@@ -113,14 +113,14 @@ The `heap` command provides information on the heap chunks.
 
 Use `heap arenas` to view the heap arenas.
 
-```bash
+```nasm
 gef➤  heap arenas
 Arena(base=0x7ffff7e19c80, top=0x5555555596d0, last_remainder=0x0, next=0x7ffff7e19c80)
 ```
 
 Use `heap chunks` to view the heap chunks.
 
-```bash
+```nasm
 gef➤  heap chunks
 Chunk(addr=0x555555559010, size=0x290, flags=PREV_INUSE | IS_MMAPPED | NON_MAIN_ARENA)
     [0x0000555555559010     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    ................]
@@ -145,7 +145,7 @@ The `dereference` (`deref` for short) command provides similar output to the Sta
 * The number of consecutive addresses to reference
 * The base location for offset (by default, the start address)
 
-```bash
+```nasm
 gef➤  deref
 0xffffd640│+0x0000: 0xffffd658  →  0xf7c184be  →  "_dl_audit_preinit"	 ← $esp
 0xffffd644│+0x0004: 0x00000000
@@ -161,7 +161,7 @@ gef➤  deref
 
 With arguments:
 
-```bash
+```nasm
 gef➤  deref $esp -l 7 -r $ebp
 0xffffd640│-0x0048: 0xffffd658  →  0xf7c184be  →  "_dl_audit_preinit"	 ← $esp
 0xffffd644│-0x0044: 0x00000000
@@ -176,7 +176,7 @@ gef➤  deref $esp -l 7 -r $ebp
 
 The `registers` command is a wrapper for `info registers`. It shows the current state of the registers in the same format it is printed in `context`.
 
-```bash
+```nasm
 gef➤  registers
 $eax   : 0xffffd228  →  0xf7c184be  →  "_dl_audit_preinit"
 $ebx   : 0x0804c000  →  0x0804bf10  →  <_DYNAMIC+0> add DWORD PTR [eax], eax
@@ -193,7 +193,7 @@ $cs: 0x23 $ss: 0x2b $ds: 0x2b $es: 0x2b $fs: 0x00 $gs: 0x63
 
 Like `info registers`, you can filter by register.
 
-```bash
+```nasm
 gef➤  registers $eip $esi
 $eip   : 0x0804922e  →  0xfffe2de8  →  0x00000000
 $esi   : 0xffffd324  →  0xffffd4ea  →  "/home/joybuzzer/args"
@@ -203,7 +203,7 @@ $esi   : 0xffffd324  →  0xffffd4ea  →  "/home/joybuzzer/args"
 
 `vmmap` performs an extended function to `info proc mappings`. It shows all loaded memory segments.
 
-```bash
+```nasm
 gef➤  vmmap
 [ Legend:  Code | Heap | Stack ]
 Start      End        Offset     Perm Path
@@ -232,7 +232,7 @@ Start      End        Offset     Perm Path
 
 `vmmap` also takes an optional argument. It takes an address and will resolve that address to a certain memory segment.
 
-```bash
+```nasm
 gef➤  x/wx $ebp-0x30
 0xffffd228:     0xf7c18400
 gef➤  vmmap 0xffffd228
@@ -245,7 +245,7 @@ Start      End        Offset     Perm Path
 
 `scan` searches for addresses of one memory region inside another region. This is also known as _needle-in-haystack scanning_.
 
-```bash
+```nasm
 gef➤  scan stack libc
 [+] Searching for addresses in 'stack' that point to 'libc'
 [stack]: 0x00007fffffffd6a8│+0x1f6a8: 0x00007ffff77cf482  →  "__tunable_get_val"
@@ -258,7 +258,7 @@ gef➤  scan stack libc
 
 You can check mappings without a path associated using an address range.
 
-```bash
+```nasm
 gef➤  scan 0x555555554000-0x555555555000 libc
 [+] Searching for addresses in '0x555555554000-0x555555555000' that point to 'libc'
 ```

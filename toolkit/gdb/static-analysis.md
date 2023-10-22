@@ -14,7 +14,7 @@ We will use the `win32` binary for sample output.
 
 We can use `checksec` in `gdb` to get the security features.
 
-```bash
+```nasm
 gef➤  checksec
 ```
 
@@ -35,11 +35,11 @@ This is a GEF feature. Ensure you have GEF installed.
 
 To view the list of available functions:
 
-```bash
+```nasm
 gef➤  info functions
 ```
 
-```as
+```nasm
 All defined functions:
 
 Non-debugging symbols:
@@ -65,11 +65,11 @@ Non-debugging symbols:
 
 `info functions` takes another optional argument: the function keyword to search for. This is useful for not bloating standard output if you want a single function's address.
 
-```bash
+```nasm
 gef➤  info functions win
 ```
 
-```as
+```nasm
 All functions matching regular expression "win":
 
 Non-debugging symbols:
@@ -88,11 +88,11 @@ We can use the `disassemble` function to disassemble a function. So long as the 
 `disassemble` can be abbreviated as `disas`.
 {% endhint %}
 
-```bash
+```nasm
 gef➤  disas win
 ```
 
-```as
+```nasm
 Dump of assembler code for function win:
    0x080491a6 <+0>:	push   ebp
    0x080491a7 <+1>:	mov    ebp,esp
@@ -117,7 +117,7 @@ End of assembler dump.
 
 You don't need to list `@plt` for the PLT functions. They won't resolve if you do:
 
-```bash
+```nasm
 gef➤  disas system@plt
 No symbol table is loaded.  Use the "file" command.
 
@@ -130,11 +130,11 @@ Dump of assembler code for function system@plt:
 
 If the binary is running, `disas system` will output differently:
 
-```bash
+```nasm
 gef➤  disas system
 ```
 
-```as
+```nasm
 Dump of assembler code for function system:
    0xf7c48170 <+0>:	endbr32 
    0xf7c48174 <+4>:	call   0xf7d71e2d
@@ -162,11 +162,11 @@ Why does this happen? When the binary is running, the PLT functions are resolved
 
 You can use `got` to view the GOT table. _You can only do this when the binary is running_ since the GOT resolves at runtime.
 
-```bash
+```nasm
 gef➤  got
 ```
 
-```as
+```nasm
 GOT protection: Partial RelRO | GOT functions: 5
  
 [0x804c00c] __libc_start_main@GLIBC_2.34  →  0xf7c21560

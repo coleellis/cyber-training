@@ -183,7 +183,7 @@ printf("%s\n", string);
 
 Running this gets the flag:
 
-```bash
+```nasm
 $ gcc -o solve solve.c && ./solve && rm solve
 flag{Y0uR3@dTh3B!n@ryTr33C0rr3ctly}
 ```

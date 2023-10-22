@@ -12,7 +12,7 @@ This will be a good introduction to reversing obfuscated functions in Ghidra.
 
 Running `checksec` on the binary, we notice all security features are enabled:
 
-```bash
+```nasm
 $ checksec undo
 [*] '/home/joybuzzer/Documents/vunrotc/public/reverse-engineering/11-ghidra/undo/src/undo'
     Arch:     i386-32-little
@@ -319,7 +319,7 @@ proc.interactive()
 
 This gives us the flag:
 
-```bash
+```nasm
 $ python3 exploit.py
 [+] Opening connection to vunrotc.cole-ellis.com on port 11200: Done
 [*] Switching to interactive mode

@@ -14,14 +14,14 @@ We'll do this the same way that we did it in the ROP chapter. We use `ROPgadget`
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary stepup | grep "pop rdi"
 0x00000000004011db : pop rdi ; ret
 ```
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper -f stepup --search "pop rdi"
 [INFO] Load gadgets from cache
 [LOAD] loading... 100%
@@ -34,7 +34,7 @@ $ ropper -f stepup --search "pop rdi"
 {% endtab %}
 
 {% tab title="Radare2" %}
-```bash
+```nasm
 [0x00401169]> /R pop rdi
   0x004011db                 5f  pop rdi
   0x004011dc                 c3  ret

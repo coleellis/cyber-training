@@ -8,7 +8,7 @@ description: Bypassing PIE with a provided address leak.
 
 This binary is the first we've covered thus far that enables PIE. We see this in the `checksec` output:
 
-```bash
+```nasm
 $ checksec gimme
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/06-pie/gimme/src/gimme'
     Arch:     i386-32-little
@@ -30,7 +30,7 @@ The `main()` function only makes a call to `read_in` and then returns.
 
 Now, let's discuss the `read_in` function. We can start dissecting each call and the arguments being passed. The first call is to `printf`:
 
-```as
+```nasm
    0x565561fe <+21>:	lea    eax,[ebx-0x2dfb]
    0x56556204 <+27>:	push   eax
    0x56556205 <+28>:	lea    eax,[ebx-0x1fc0]
@@ -42,7 +42,7 @@ Checking what's at the address pushed addresses:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/s $ebx-0x1fc0
 0x56557008:	"Main function is at: %lx\n"
 gef➤  x/wx $ebx-0x2dfb
@@ -106,7 +106,7 @@ p.interactive()
 
 As we can see, PIE is bypassed, and the binary is exploited:
 
-```bash
+```nasm
 $ python3 exploit.py
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/06-pie/gimme/src/gimme'
     Arch:     i386-32-little

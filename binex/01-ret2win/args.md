@@ -10,7 +10,7 @@ Now that we've spent some time going over binaries in extreme detail, I am going
 
 ### Checking Security
 
-```bash
+```nasm
 $ checksec args
 [*] '/home/joybuzzer/Documents/vunrotc/public/01-ret2win/args/src/args'
     Arch:     i386-32-little
@@ -29,7 +29,7 @@ Checking the functions list:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  info functions
 All defined functions:
 
@@ -64,7 +64,7 @@ If we check `read_in()` and `main()`, we'll see that the two methods are identic
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  disas win
 Dump of assembler code for function win:
    0x080491a6 <+0>:	push   ebp
@@ -141,7 +141,7 @@ We pass `cmp` through `p32()` for two reasons: (1) we need it to be little-endia
 
 Running this yields doesn't work!
 
-```bash
+```nasm
 [+] Starting local process './args': pid 5882
 [*] Switching to interactive mode
 Good luck winning here!
@@ -154,7 +154,7 @@ $
 
 What went wrong? If we do some digging, we'll find that _You lose!_ gets printed whenever we don't match the correct argument:
 
-```as
+```nasm
 ──── arguments (guessed) ────
 puts@plt (
    [sp + 0x0] = 0x0804a008 → "You lose!"
@@ -167,7 +167,7 @@ What is happening? Checking the stack frame at the time of the `cmp` call shows 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/20wx $esp
 0xffdcb134:	0x41414141	0x41414141	0x41414141	0xdeadbeef
 0xffdcb144:	0x00000000	0xf7fba020	0xf7c21519	0x00000001
@@ -189,7 +189,7 @@ We're off by one chunk? _Why is that?_ Since we're jumping to `win()` by changin
 {% hint style="warning" %}
 _In our code, `0xdeadbeef` is actually serving as the return pointer for `win()`. If you continue execution, you'll notice you end up at this address:_
 
-```as
+```nasm
 [#0] Id 1, Name: "args", stopped 0xdeadbeef in ?? (), reason: SIGSEGV
 ```
 {% endhint %}
@@ -219,7 +219,7 @@ proc.interactive()
 
 Running this works!
 
-```bash
+```nasm
 [+] Starting local process './args': pid 6081
 [*] Switching to interactive mode
 Good luck winning here!

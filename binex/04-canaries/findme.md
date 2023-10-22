@@ -14,7 +14,7 @@ If you can go from nothing to an attack vector to an exploit for most problems i
 
 If we check the security, we notice that there is clearly a canary present.
 
-```bash
+```nasm
 $ checksec ./findme
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/04-canaries/findme/src/findme'
     Arch:     i386-32-little
@@ -39,7 +39,7 @@ Moving to the `gets` call that supplies the input to the format string vulnerabi
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/20wx $esp
 0xffffd550:	0xffffd560	0x00000014	0x00000000	0x080491d2
 0xffffd560:	0x00000000	0x00000000	0x01000000	0x0000000b
@@ -58,7 +58,7 @@ We see the canary is at the 19th offset on the stack. If we want to do this math
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  p/x $esp
 $3 = 0xffffd550
 gef➤  p/x $ebp-0xc
@@ -115,7 +115,7 @@ proc.interactive()
 
 Running the exploit gets us the flag:
 
-```bash
+```nasm
 $ python3 exploit.py
 b'Enter your username.\n'
 b'Hi, '

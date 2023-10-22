@@ -10,21 +10,21 @@ This section is known as **dynamic analysis**. Dynamic analysis is actively runn
 
 Breakpoints are how we can pause execution to analyze the binary. We can set a breakpoint using the `break` command (`b` for short). It takes a secondary argument of the address to break at. You have to dereference the address; otherwise, `gdb` will assume you are attempting to name a function.
 
-```bash
+```nasm
 gef➤  b *0x0804923c
 Breakpoint 1 at 0x804923c
 ```
 
 Moreover, we can also set breakpoints at the start of specific functions:
 
-```bash
+```nasm
 gef➤  b read_in
 Breakpoint 2 at 0x80491f3
 ```
 
 Or a function plus an offset. Since a function plus an offset returns an address, we must dereference it.
 
-```bash
+```nasm
 gef➤  b *(win+38)
 Breakpoint 3 at 0x80491cc
 ```
@@ -33,7 +33,7 @@ Breakpoint 3 at 0x80491cc
 
 You can use `info breakpoints` (`info break` for short) to see the current breakpoints set.
 
-```bash
+```nasm
 gef➤  info break
 Num     Type           Disp Enb Address    What
 1       breakpoint     keep y   0x0804923f <main+3>
@@ -47,7 +47,7 @@ We need this menu to get the breakpoint number for each breakpoint. We use this 
 
 We can enable or disable breakpoints based on their number. This is useful to temporarily disable a breakpoint without deleting it.
 
-```bash
+```nasm
 gef➤  disable 2
 gef➤  enable 2
 ```
@@ -60,7 +60,7 @@ Breakpoints are _**enabled**_ by default.
 
 We can use this menu to delete breakpoints by their number. We can use `delete` (or `d` for short).
 
-```bash
+```nasm
 gef➤  d 3
 ```
 
@@ -70,14 +70,14 @@ A **watchpoint** is a breakpoint triggered when a specific memory address is acc
 
 You can set a watchpoint to watch a register:
 
-```bash
+```nasm
 gef➤  watch $esp
 Watchpoint 2: $esp
 ```
 
 You can also watch an instruction or a hardcoded location:
 
-```bash
+```nasm
 gef➤  watch *(read_in+59)
 Hardware watchpoint 3: *(read_in+59)
 ```
@@ -86,7 +86,7 @@ Hardware watchpoint 3: *(read_in+59)
 
 You can use `info watchpoints` (`info watch` for short) to see the current watchpoints set.
 
-```bash
+```nasm
 gef➤  info watch
 Num     Type           Disp Enb Address    What
 2       watchpoint     keep y              $esp
@@ -97,7 +97,7 @@ Num     Type           Disp Enb Address    What
 
 You can run the binary using the `run` command (`r` for short). Without any breakpoints set, this doesn't do much:
 
-```bash
+```nasm
 gef➤  r
 Starting program: /home/joybuzzer/args 
 [Thread debugging using libthread_db enabled]
@@ -132,7 +132,7 @@ To step in, use the `si` instruction. To step over, use the `ni` instruction. Yo
 
 For the current binary, running the following will get us into `read_in`:
 
-```bash
+```nasm
 gef➤  ni
 gef➤  
 gef➤  
@@ -143,26 +143,26 @@ gef➤  si
 
 You can use the `continue` command (`c` for short) to continue execution until the next breakpoint or watchpoint is hit.
 
-```bash
+```nasm
 gef➤  c
 Continuing.
 ```
 
 You can use the `finish` command to continue running until the current function returns.
 
-```bash
+```nasm
 gef➤  finish
 ```
 
 The `until` (`u` for short) command continues execution until _the program counter is greater than the jump address_. This is useful for stepping over loops.
 
-```bash
+```nasm
 gef➤  u
 ```
 
 The `advance` function continues running until a specified location. This is the same as using a breakpoint without having to permanently set a breakpoint.
 
-```bash
+```nasm
 gef➤  advance 0x804923c
 ```
 
@@ -208,25 +208,25 @@ You can run programs in reverse order to better understand how to reach a certai
 
 Use `reverse-stepi` (`rsi` for short) to reverse-executive one machine instruction. This is the same as stepping backward (and in).
 
-```bash
+```nasm
 gef➤  rsi
 ```
 
 Use `reverse-nexti` (`rni` for short) to reverse-executive a single instruction in reverse. _Called functions are un-executed automatically._
 
-```bash
+```nasm
 gef➤  rni
 ```
 
 `reverse-continue` (`rc` for short) will continue execution in reverse until the next breakpoint or watchpoint is hit.
 
-```bash
+```nasm
 gef➤  rc
 ```
 
 `reverse-finish` takes you to where the current function was called (the top of the function).
 
-```bash
+```nasm
 gef➤  rf
 ```
 
@@ -236,39 +236,39 @@ gef➤  rf
 
 Use `set follow-fork-mode` to set how you want to follow. You can choose to follow the `parent` or the `child`.
 
-```bash
+```nasm
 gef➤  set follow-fork-mode parent
 ```
 
 Use `show follow-fork-mode` to show the active mode.
 
-```bash
+```nasm
 gef➤  show follow-fork-mode
 Debugger response to a program call of fork or vfork is "parent".
 ```
 
 `gdb` can also detach a process after a fork to retain debugger control over both. The mode can be `on` (the `follow-fork-mode` process will be detached and will run independently) or `off` (both processes are held under `gdb`, one suspended while debugging the other).
 
-```bash
+```nasm
 gef➤  set detach-on-fork on
 ```
 
 Again, `show detach-on-fork` shows the current mode.
 
-```bash
+```nasm
 gef➤  show detach-on-fork
 Whether gdb will detach the child of a fork is on.
 ```
 
 Finally, `follow-exec-mode` sets the debugger's response to an `exec` call. The mode can be `new` (`gdb` creates an inferior process and rebinds to it) or `same` (`gdb` continues to debug the same process).
 
-```bash
+```nasm
 gef➤  set follow-exec-mode new
 ```
 
 `show follow-exec-mode` shows the current mode.
 
-```bash
+```nasm
 gef➤  show follow-exec-mode
 Follow exec mode is "new".
 ```

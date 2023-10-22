@@ -19,7 +19,7 @@ First, we need to find a leakable address on the stack. We'll use `gdb` to do th
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/10gx $rsp
 0x7fffffffe3c0:	0x7025207025207025	0x2520702520702520
 0x7fffffffe3d0:	0x2070252070252070	0x0000007025207025
@@ -38,7 +38,7 @@ We like the 8th value on the stack because it matches the format of the instruct
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/wx 0x00005555555552ba
 0x5555555552ba <main+18>:	0x000000b8
 ```
@@ -68,7 +68,7 @@ elf.address = leak - (elf.sym.main + 18)
 
 We also need a way to beat the `movaps` instruction. Because PIE is enabled, we can't hardcode gadgets. This means we have to find what function they're in, their offset, and then use that for our gadget. In this case, we can pull any `ret`, I tend to use `deregister_tm_clones()` because I know it's not problematic. We find our `ret` instruction:
 
-```as
+```nasm
    0x0000555555555158 <+40>:	ret    
 ```
 

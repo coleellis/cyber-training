@@ -12,7 +12,7 @@ We will practice writing shellcode against a binary with an executable stack. No
 
 We check the security measures to see that shellcode is plausible:
 
-```bash
+```nasm
 $ checksec location
 [*] '/home/joybuzzer/Documents/vunrotc/public/02-shellcodes/location/src/location'
     Arch:     i386-32-little
@@ -30,7 +30,7 @@ The mark that the stack is executable is our sign that we can use a shellcode at
 
 Running shellcode binaries are good ways to check the information we have:
 
-```bash
+```nasm
 $ nc vunrotc.cole-ellis 2300
 Buffer is at 0xffffd308
 [[[Test input]]]
@@ -45,7 +45,7 @@ The reason behind this is a security measure called **ASLR**. ASLR stands for **
 
 Because ASLR is turned off on the remote server, the address is not changing. ASLR is turned on locally, so the address is changing. We can turn off ASLR locally to make our lives easier:
 
-```bash
+```nasm
 $ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 ```
 
@@ -67,7 +67,7 @@ I use the same few shellcodes for most of my challenges. There is an online data
 
 Since this is a 32-bit binary, I choose an x86 shellcode that spawns a shell. [Shellstorm-811](https://shell-storm.org/shellcode/files/shellcode-811.html) is a great choice for this challenge. The shellcode reads:
 
-```as
+```nasm
 08048060 <_start>:
  8048060: 31 c0                 xor    %eax,%eax
  8048062: 50                    push   %eax

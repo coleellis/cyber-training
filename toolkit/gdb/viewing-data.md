@@ -14,7 +14,7 @@ We can use various summary commands to see lots of data simultaneously. GEF's pr
 
 This command shows all the available registers and their current value.
 
-```bash
+```nasm
 gef➤  info registers
 eax            0x804923c           0x804923c
 ecx            0x22d4b89d          0x22d4b89d
@@ -44,7 +44,7 @@ k7             0x0                 0x0
 
 GEF provides a similar command, `registers`, outputs the registers that it shows in the GEF output. Its output is a bit more verbose and only shows the most important registers.
 
-```bash
+```nasm
 gef➤  registers
 $eax   : 0x0804923c  →  <main+0> push ebp
 $ebx   : 0xf7e2a000  →  0x00229dac
@@ -61,7 +61,7 @@ $cs: 0x23 $ss: 0x2b $ds: 0x2b $es: 0x2b $fs: 0x00 $gs: 0x63
 
 `registers` takes an optional argument to show only a subset of registers. Remember that GDB uses `$` syntax for registers.
 
-```bash
+```nasm
 gef➤  registers $eip $esp $edi
 $esp   : 0xffffd698  →  0xf7ffd020  →  0xf7ffda40  →  0x00000000
 $edi   : 0xf7ffcb80  →  0x00000000
@@ -72,7 +72,7 @@ $eip   : 0x0804923f  →  <main+3> and esp, 0xfffffff0
 
 This gives us extra details on the stack frame. I do not commonly use this command because GEF provides a lot of this information in the GEF output.
 
-```bash
+```nasm
 gef➤  info frame
 Stack level 0, frame at 0xffffd6a0:
  eip = 0x804923f in main; saved eip = 0xf7c21519
@@ -92,7 +92,7 @@ GEF's `elf-info` provides more detailed information on the binary's segments. Th
 
 {% tabs %}
 {% tab title="info proc mappings" %}
-```bash
+```nasm
 gef➤  info proc mappings
 process 10029
 Mapped address spaces:
@@ -123,7 +123,7 @@ Mapped address spaces:
 {% endtab %}
 
 {% tab title="vmmap" %}
-```bash
+```nasm
 gef➤  vmmap
 [ Legend:  Code | Heap | Stack ]
 Start      End        Offset     Perm Path
@@ -152,7 +152,7 @@ Start      End        Offset     Perm Path
 {% endtab %}
 
 {% tab title="elf-info" %}
-```bash
+```nasm
 gef➤  elf-info
 ──────────────────────────────────────────────── Section Header ────────────────────────────────────────────────
   [ #] Name                            Type    Address   Offset     Size   EntSiz Flags Link Info    Align
@@ -197,7 +197,7 @@ Remember, this function only works during runtime.
 
 This command shows us the global variables in the program. This is useful for understanding the program's layout and where data is stored. There is a lot of bloat in this output because the binary automatically includes a lot of variables for the C runtime.
 
-```bash
+```nasm
 gef➤  info variables
 All defined variables:
 
@@ -229,7 +229,7 @@ Remember, this function only works during runtime.
 
 We use this command whenever we open a binary to see the available functions.
 
-```bash
+```nasm
 gef➤  info functions
 All defined functions:
 
@@ -262,7 +262,7 @@ If you run this command at runtime, every function from the C runtime will be in
 
 The `print` command (`p` for short) is the driving force behind examining data. It allows us to print the value of an **expression**.
 
-```bash
+```nasm
 gef➤  print 0x10-0x8
 $1 = 0x8
 ```
@@ -271,7 +271,7 @@ $1 = 0x8
 
 We can use the `x` command to examine memory. It takes an address or a register as its argument:
 
-```bash
+```nasm
 gef➤  x $esp
 0xffffd640:	0xffffd658
 gef➤  x 0xffffd640
@@ -286,7 +286,7 @@ There are three formatting parameters formatted like so: `x/NFU <ADDRESS>`. The 
 
 Here is this in action in two common use cases:
 
-```bash
+```nasm
 # in 32-bit (understanding passed parameters)
 gef➤  x/20wx $esp
 0xffffd640:	0xffffd658	0x00000000	0x01000000	0x080491fb
@@ -332,7 +332,7 @@ There are two major commands for finding data in memory: `find` and `search-patt
 
 In action:
 
-```bash
+```nasm
 gef➤  find 0x08049000, +0x1000, "/bin/sh"
 Pattern not found.
 
@@ -346,7 +346,7 @@ gef➤  find 0x08049000, +0x1000, 0xc3
 
 `search-pattern` is a GEF command used for finding strings. It takes a string argument and searches across the binary and loaded libraries for all instances of the string.
 
-```bash
+```nasm
 gef➤  search-pattern "/bin/cat flag.txt"
 [+] Searching '/bin/cat flag.txt' in memory
 [+] In '/home/joybuzzer/split'(0x601000-0x602000), permission=rw-
@@ -360,7 +360,7 @@ gef➤  search-pattern /bin/sh
 
 `search-pattern` can also search based on endianness and can restrict search in only a certain part of memory.
 
-```bash
+```nasm
 gef➤  search-pattern /bin/sh little 0x0-0x80500000
 [+] Searching '/bin/sh' in 0x0-0x80500000
 ```

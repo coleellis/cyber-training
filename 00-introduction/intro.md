@@ -12,14 +12,14 @@ In this binary, we will look at the basic toolkit that we use to disassemble and
 
 When you download the binary, the first thing I recommend is to run it. Because you downloaded the binary online, execution will be turned off by default. To fix this:
 
-```bash
+```nasm
 $  chmod +x intro
 $  ./intro
 ```
 
 We are provided the following output:
 
-```bash
+```nasm
 $  ./intro
 Enter the flag here: flag
 Nope, try again!
@@ -29,7 +29,7 @@ We need just to enter the flag, and it will tell us if we get it right.
 
 Second, we check the security measures of the file. Use `checksec` for this. `checksec intro` prints the following:
 
-```bash
+```nasm
 [*] '/home/joybuzzer/Documents/vunrotc/live/00-introduction/intro/intro'
     Arch:     amd64-64-little
     RELRO:    Full RELRO
@@ -57,7 +57,7 @@ Let's start disassembling this binary.
 
 Running this binary with `gdb` will let us see the assembly behind the program. To do this, we run `gdb intro`. From here, the best thing to check is the available functions (`info functions`):
 
-```as
+```nasm
 gef➤  info functions
 All defined functions:
 
@@ -80,7 +80,7 @@ Non-debugging symbols:
 
 Most of these functions are standard library functions. The ones suffixed `@plt` are external library functions. The only function that we are interested in is `main`. Let's take a look at the assembly for `main` (`disas main`):
 
-```as
+```nasm
 gef➤  disas main
 Dump of assembler code for function main:
    0x00000000000011c9 <+0>:	endbr64 
@@ -164,7 +164,7 @@ DESCRIPTION
 
 This tells us that `malloc()` takes a parameter: the number of bytes passed to it. Since we know that `rdi` is the register that **always** holds the first parameter, we check above the function call for `rdi` being stored.
 
-```as
+```nasm
    0x00000000000011dc <+19>:	mov    edi,0x20
    0x00000000000011e1 <+24>:	call   0x10d0 <malloc@plt>
    0x00000000000011e6 <+29>:	mov    QWORD PTR [rbp-0x8],rax
@@ -190,7 +190,7 @@ DESCRIPTION
 
 The `man` pages aren't super helpful here. `printf` just prints text to the screen. `rdi` will have the string in memory that we want to print.
 
-```as
+```nasm
    0x00000000000011ea <+33>:	lea    rax,[rip+0xe13]        # 0x2004
    0x00000000000011f1 <+40>:	mov    rdi,rax
    0x00000000000011f4 <+43>:	mov    eax,0x0
@@ -225,7 +225,7 @@ DESCRIPTION
 
 This tells that `fgets()` is an input function. Since `fgets()` takes three arguments, we need to find what `rdi`, `rsi`, and `rdx` are to understand what's going into the function.
 
-```as
+```nasm
    0x00000000000011fe <+53>:	mov    rdx,QWORD PTR [rip+0x2e0b]        # 0x4010 <stdin@GLIBC_2.2.5>
    0x0000000000001205 <+60>:	mov    rax,QWORD PTR [rbp-0x8]
    0x0000000000001209 <+64>:	mov    esi,0x20
@@ -260,7 +260,7 @@ This means that we can't perform many of the stack overflow techniques we are go
 
 Let's go find `rdi` and `rsi`.
 
-```as
+```nasm
    0x0000000000001216 <+77>:	mov    rax,QWORD PTR [rbp-0x8]
    0x000000000000121a <+81>:	lea    rdx,[rip+0xdf9]        # 0x201a
    0x0000000000001221 <+88>:	mov    rsi,rdx
@@ -273,7 +273,7 @@ From this, we notice two things:
 * `rdi` is loaded with the address of `rbp-0x8`, which is where the `malloc` happened. This means that `rdi` is the first string.
 * `rsi` is loaded with the address of `rip+0xdf9`, which is `0x201a`. This is not something that we loaded. We notice that it is based on the instruction pointer (because of PIE), which tells us that it is something hardcoded. _More on this later_, but for now, let's check what's there.
 
-```as
+```nasm
 gef➤  x/s 0x201a
 0x201a:	"flag{welcome_to_runtime}\n"
 ```

@@ -138,7 +138,7 @@ printf("}\n");
 
 Running this gets the flag:
 
-```bash
+```nasm
 $ gcc -o solve solve.c && ./solve && rm solve
 flag{&dGe04H<H&jNBSzT1h/7jf;h}
 ```

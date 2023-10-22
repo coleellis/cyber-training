@@ -18,7 +18,7 @@ _This challenge, along with all the others, are the 64-bit renditions from ROP e
 
 The primary functions we see in the binary are:
 
-```as
+```nasm
 0x0000000000400697  main
 0x00000000004006e8  pwnme
 0x0000000000400756  ret2win
@@ -62,7 +62,7 @@ void *memset(void *s, int c, size_t n);
 
 Based on what's loaded to the registers, we can tell the function call is `memset(rbp-0x20, 0, 0x20)`:
 
-```as
+```nasm
    0x00000000004006f0 <+8>:	lea    rax,[rbp-0x20]
    0x00000000004006f4 <+12>:	mov    edx,0x20
    0x00000000004006f9 <+17>:	mov    esi,0x0

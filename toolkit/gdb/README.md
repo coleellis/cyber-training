@@ -12,7 +12,7 @@ Nearly every challenge dissected in this guide used `gdb`, with a few exceptions
 
 Installation of `gdb` is extremely simple:
 
-```bash
+```nasm
 pip install gdb
 ```
 
@@ -20,7 +20,7 @@ To extend its feature set, we will also install the `gdb-gef` extension. More in
 
 To install GEF, use the following command:
 
-```bash
+```nasm
 $ bash -c "$(wget https://gef.blah.cat/sh -O -)"
 ```
 
@@ -34,6 +34,6 @@ They all offer very similar feature sets. I personally like GEF the best, but fe
 
 We run `gdb` on the binary that we want to analyze. The plugin will automatically run when we run the binary.
 
-```bash
+```nasm
 gdb <binary>
 ```

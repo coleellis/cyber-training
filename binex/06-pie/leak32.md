@@ -12,7 +12,7 @@ In this case, we won't be provided a leak. Instead, we must combine how we used 
 
 PIE is indeed enabled, and there is no canary:
 
-```bash
+```nasm
 $ checksec ./leak32
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/06-pie/leak32/src/leak32'
     Arch:     i386-32-little
@@ -45,7 +45,7 @@ void read_in()
 
 We'll use a format string against the first input. Let's test what happens when we do that to see what addresses get printed. In this case, because we are looking for addresses, we use `%p` instead of `%x`:
 
-```bash
+```nasm
 $ ./leak32
 What's your name?
 %p %p %p %p %p %p %p %p
@@ -63,7 +63,7 @@ Also, we can't check _those_ specific addresses because PIE is enabled. We need 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/10wx $esp
 0xffffd580:	0xffffd598	0x00000000	0x01000000	0x565561f9
 0xffffd590:	0xf7fc4540	0x00000000	0x25207025	0x70252070
@@ -80,7 +80,7 @@ The first address is the address of the format string. We start counting from th
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/wx 0x565561f9
 0x565561f9 <read_in+12>:	0x2dc7c381
 gef➤  x/wx 0xf7fc4540

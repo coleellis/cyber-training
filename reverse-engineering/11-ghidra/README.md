@@ -18,7 +18,7 @@ I use an Ubuntu Linux virtual machine to run Ghidra. Ghidra is not installed by 
 * The binary to run Ghidra is located in the `ghidra_<version-num>` folder. The binary is called `./ghidraRun`.
 * Rather than navigating to this folder every time, I made a shell file that runs it automatically. Simply add the file path into a file called `.ghidra` in your home or root directory. Mine looks like:
 
-```bash
+```nasm
 $ cat /.ghidra
 /home/joybuzzer/Downloads/ghidra_10.3.1_PUBLIC/ghidraRun
 ```

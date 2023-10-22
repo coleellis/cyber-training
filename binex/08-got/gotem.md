@@ -10,7 +10,7 @@ Our goal in this binary is to overwrite a function's address inside the GOT tabl
 
 To ensure we can do this, we check the security to ensure that RELRO is not fully enabled:
 
-```bash
+```nasm
 $ checksec gotem
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/08-got/gotem/src/gotem'
     Arch:     i386-32-little
@@ -33,7 +33,7 @@ The code in this binary is definitely interesting. If we look at the `read_in` f
 * The end of the function has no return. The end of the function jumps back to `read_in + 21`. _This is an infinite `while` loop_. We'll need to consider how we can take advantage of this.
 *   This binary features a secure `fgets` call that reads in `0x12c` bytes into a `0x134` byte buffer. This means we can't overflow the buffer.
 
-    ```as
+    ```nasm
        0x080491e1 <+59>:	mov    eax,DWORD PTR [ebx-0x8]
        0x080491e7 <+65>:	mov    eax,DWORD PTR [eax]
        0x080491e9 <+67>:	sub    esp,0x4
@@ -71,7 +71,7 @@ This saves us a lot of time calculating the number of bytes we need to write, wr
 
 Remember that if we don't initialize the base address of `libc`, it will just use an offset. We need to get the base address. Since ASLR is turned off, this is a hardcoded value. We can get this by running `ldd` on the binary to check the dynamic linker:
 
-```bash
+```nasm
 $ ldd gotem
 	linux-gate.so.1 (0xf7fc4000)
 	libc.so.6 => /lib/i386-linux-gnu/libc.so.6 (0xf7c00000)

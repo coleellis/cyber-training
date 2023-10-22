@@ -10,7 +10,7 @@ This problem is the first instance where the stack protector, called the **canar
 
 When we run `checksec` on the binary, we notice that the canary is enabled.
 
-```bash
+```nasm
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/04-canaries/canary/src/canary'
     Arch:     i386-32-little
     RELRO:    Partial RELRO
@@ -21,7 +21,7 @@ When we run `checksec` on the binary, we notice that the canary is enabled.
 
 PIE is still disabled, meaning we can still use the same techniques we used in the previous binary. However, we can't use the same techniques to overflow the stack. Let's see what happens when we try to overflow the stack.
 
-```bash
+```nasm
 $ python -c "print('A'*1000)" | ./canary
 Hello, what is your name?
 ...
@@ -44,35 +44,35 @@ It seems that our primary functions are `main`, `read_in`, and `win`.
 
 *   `puts("Hello, what is your name?")`
 
-    ```as
+    ```nasm
     puts@plt (
       [sp + 0x0] = 0x0804a008 → "Hello, what is your name?"
     )
     ```
 *   `gets(ebp-0x4c)`
 
-    ```as
+    ```nasm
     gets@plt (
      [sp + 0x0] = 0xffffd54c → 0xf7fc66d0 → 0x0000000e
     )
     ```
 *   `printf(ebp-0x4c)`
 
-    ```as
+    ```nasm
     printf@plt (
      [sp + 0x0] = 0xffffd54c → 0xf7006968 ("hi"?)
     )
     ```
 *   `puts("How can I help you today?")`
 
-    ```as
+    ```nasm
     puts@plt (
      [sp + 0x0] = 0x0804a023 → "How can I help you today?"
     )
     ```
 *   `gets(ebp-0x4c)`
 
-    ```as
+    ```nasm
     gets@plt (
      [sp + 0x0] = 0xffffd54c → 0xf7006968 ("hi"?)
     )
@@ -80,7 +80,7 @@ It seems that our primary functions are `main`, `read_in`, and `win`.
 
 After this last check, we see that the canary check is made:
 
-```as
+```nasm
 0x08049283 <+189>:	mov    eax,DWORD PTR [ebp-0xc]
 0x08049286 <+192>:	sub    eax,DWORD PTR gs:0x14
 0x0804928d <+199>:	je     0x8049294 <read_in+206>
@@ -107,7 +107,7 @@ The first one is by far easier and more practical.
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  canary
 [+] The canary of process 44910 is at 0xffffd80b, value is 0x8fdba200
 gef➤  x/40wx $esp
@@ -131,7 +131,7 @@ gef➤  x/40wx $esp
 
 `gdb` tells us that the canary is at `0xffffd80b`. If we count from our location to the canary, we see that it is 23 DWORDs away. We can verify this using the format string:
 
-```bash
+```nasm
 $ ./canary
 Hello, what is your name?
 %23$x

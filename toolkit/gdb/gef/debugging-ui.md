@@ -22,7 +22,7 @@ Use `context` to refresh the context. This prints the current context. This is u
 
 You can use `gef config context.layout` to change the layout of the context. By default, all sections are shown.
 
-```bash
+```nasm
 gef➤  gef config context.layout
 ─────────────────────────────────── GEF configuration setting: context.layout ───────────────────────────────────
 context.layout (str) = "legend regs stack code args source memory threads trace extra libc_function_args syscall_args libc_function_args syscall_args libc_function_args syscall_args"
@@ -33,7 +33,7 @@ Description:
 
 To hide a section, prepend the section name with a `-` (or omit it).
 
-```bash
+```nasm
 gef➤ gef config context.layout "-legend regs stack code args -source -threads -trace extra memory"
 ```
 
@@ -50,7 +50,7 @@ The following are also customizable:
 
 Finally, you can change the direction that the stack grows using:
 
-```bash
+```nasm
 gef➤ gef config context.grow_stack_down True
 ```
 

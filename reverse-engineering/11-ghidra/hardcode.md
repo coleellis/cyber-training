@@ -10,7 +10,7 @@ Unlike previous binaries, we won't do any disassembly using `gdb`. Rather, we wi
 
 We first use `checksec` to see what security features are enabled:
 
-```bash
+```nasm
 $ checksec hardcode
 [*] '/home/joybuzzer/Documents/vunrotc/public/reverse-engineering/11-ghidra/hardcode/src/hardcode'
     Arch:     i386-32-little
@@ -120,7 +120,7 @@ Unlike the binex section, our goal isn't to exploit the binary. We aim to craft 
 
 If we try to pass `0x12345` as input, we get the following:
 
-```bash
+```nasm
 $ nc vunrotc.cole-ellis.com 11100
 Please enter the password to continue
 0x12345
@@ -129,7 +129,7 @@ You lose!
 
 Why doesn't this work? `atoi()` converts from a string to an integer. This function does not understand hex. Instead, we can pass the integer equivalent of `0x12345`:
 
-```bash
+```nasm
 $ nc vunrotc.cole-ellis.com 11100
 Please enter the password to continue
 74565

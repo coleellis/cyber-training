@@ -12,7 +12,7 @@ This is a challenging rendition of the `format` binary where we performed an arb
 
 As usual, let's check security on the binary:
 
-```bash
+```nasm
 $ checksec bbpwn
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/03-formats/bbpwn/src/bbpwn'
     Arch:     i386-32-little
@@ -32,7 +32,7 @@ We perform our routine checks in search of anything outstanding. I chose for thi
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7fa3850]> afl
 ...
 0x0804870b    1     25 sym.flag__
@@ -52,7 +52,7 @@ We first check `flag` to make sure we don't have anything to do inside the funct
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7fa3850]> pdf@sym.flag__
 ┌ 25: sym.flag__ ();
 │           0x0804870b      55             push ebp                    ; flag()
@@ -77,7 +77,7 @@ We see that this function just calls `system("cat flag.txt");` without any extra
 {% endtab %}
 
 {% tab title="Radare2" %}
-```as
+```nasm
 [0xf7fa3850]> pdf@main
             ; DATA XREF from entry0 @ 0x8048627(w)
 ┌ 214: int main (char **argv);
@@ -161,7 +161,7 @@ The most important thing to notice in this disassembly is that there is a format
 
 We'll then check where our input is on the stack when we run it:
 
-```bash
+```nasm
 $ ./bbpwn
 Hello baby pwner, whats your name?
 %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x
@@ -186,7 +186,7 @@ Checking the `got` table, we can find the address of `fflush`:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  got fflush
 
 GOT protection: Partial RelRO | GOT functions: 11
@@ -204,7 +204,7 @@ In the `got` table, `fflush` is at `0x0804a028`. We can verify this by checking 
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/i 0x804a028
    0x804a028 <fflush@got.plt>:	mov    BYTE PTR [ebp-0x7a29f7fc],0x4
 ```
@@ -219,7 +219,7 @@ We also need the address of `flag`:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  info functions flag
 All functions matching regular expression "flag":
 
@@ -254,7 +254,7 @@ Checking the addresses at `fflush`:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>:	0x52005252	0xf7000000
 ```
@@ -301,7 +301,7 @@ Remember that `%n` prints the number of bytes written thus far. If we write spac
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>:	0x0b010b0b	0xf7000001
 ```
@@ -316,7 +316,7 @@ The lower byte is now `0x0b` as desired. Now, let's do the second and third byte
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>: 0x8704870b	0xf7000004
 ```

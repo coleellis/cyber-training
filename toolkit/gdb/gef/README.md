@@ -16,7 +16,7 @@ I organize the commands into a few categories:
 
 The easiest way to install GEF is through `wget`:
 
-```bash
+```nasm
 $ bash -c "$(wget https://gef.blah.cat/sh -O -)"
 ```
 

@@ -6,7 +6,7 @@ All of our exploits will be written in Python3, so we will be using the Python3 
 
 ## Installation 
 Pwntools can be installed on Linux systems using:
-```bash
+```nasm
 pip3 install pwntools
 ```
 

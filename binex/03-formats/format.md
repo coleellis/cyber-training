@@ -43,7 +43,7 @@ In this case, here's what we notice:
 
 Let's first see what kind of data we can leak. We'll use a series of `%x` inputs to leak as much data as possible.
 
-```bash
+```nasm
 $ ./format
 Password: 
 %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x
@@ -53,7 +53,7 @@ Auth is 0
 
 We notice that a series of the same data pattern reappears after a few iterations. A quick observation shows us that:
 
-```bash
+```nasm
 $ python3 -c "print(''.join(hex(ord(x))[2:] for x in '%x '))"
 257820
 ```
@@ -75,7 +75,7 @@ int main(void)
 
 This prints:
 
-```bash
+```nasm
 $ ./test
 Hello World
 Bytes written: 11
@@ -130,7 +130,7 @@ p.interactive()
 
 Running this gives:
 
-```bash
+```nasm
 $ python3 exploit.py
 [*] '/home/joybuzzer/Documents/vunrotc/public/03-formats/format/src/format'
     Arch:     i386-32-little

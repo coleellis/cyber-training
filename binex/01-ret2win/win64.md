@@ -266,7 +266,7 @@ $1 = 0x7fffffffe450
 
 Let's see how many bytes that we need to write to reach here:
 
-```bash
+```nasm
 $ python3 -c "print(0x7fffffffe488-0x7fffffffe450)"
 56
 ```

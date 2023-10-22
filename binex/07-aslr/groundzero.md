@@ -14,7 +14,7 @@ To bypass ASLR, we need the address of a function _inside the library_. This mea
 
 Let's start with running `checksec`:
 
-```bash
+```nasm
 $ checksec ./groundzero
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/07-aslr/groundzero/src/groundzero'
     Arch:     i386-32-little
@@ -40,7 +40,7 @@ We first notice there is no `win()` function. However, `system@plt` is in the bi
 
 {% tabs %}
 {% tab title="GDB" %}
-```bash
+```nasm
 gef➤  search-pattern "/bin/sh"
 [+] Searching '/bin/sh' in memory
 [+] In '/usr/lib/i386-linux-gnu/libc.so.6'(0xf7da2000-0xf7e27000), permission=r--
@@ -63,7 +63,7 @@ Now that we have the attack vector inspiration, we must execute it. We need a wa
 
 If we check `read_in`, there is a call to `printf`. Before this call, there are two items pushed on the stack:
 
-```as
+```nasm
    0x565561e8 <+27>:	push   eax
    0x565561e9 <+28>:	lea    eax,[ebx-0x1fbc]
    0x565561ef <+34>:	push   eax
@@ -74,7 +74,7 @@ If we check the data that is in the top two entries of the stack:
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  x/2wx $esp
 0xffffd550:	0x56557008	0xf7c48150
 gef➤  x/s 0x56557008
@@ -93,7 +93,7 @@ We see that this print statement is printing the address of `system()`! Since th
 
 After this, there is a `gets()` call that has us writing to `ebp-0x34`:
 
-```as
+```nasm
    0x5655620f <+66>:	lea    eax,[ebp-0x34]
    0x56556212 <+69>:	push   eax
 => 0x56556213 <+70>:	call   0x56556070 <gets@plt>
@@ -157,7 +157,7 @@ proc.interactive()
 
 If we run this, we'll get a shell, and we can call `cat flag.txt` to get the flag.
 
-```bash
+```nasm
 $ python3 exploit.py
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/07-aslr/groundzero/src/groundzero'
     Arch:     i386-32-little

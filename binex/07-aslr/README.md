@@ -7,13 +7,13 @@ This is the equivalent of PIE for `libc`. This means that you cannot hardcode `l
 {% hint style="warning" %}
 You can turn **on** ASLR using the following command:
 
-```bash
+```nasm
 $ echo 2 | sudo tee /proc/sys/kernel/randomize_va_space
 ```
 
 ASLR can be turned **off** using:
 
-```bash
+```nasm
 $ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 ```
 

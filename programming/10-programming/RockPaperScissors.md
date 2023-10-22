@@ -227,7 +227,7 @@ int main(void)
 
 If we run this, we'll get the following output:
 
-```bash
+```nasm
 $ gcc -o solve solve.c && ./solve
 flag{12794_14979}
 ```

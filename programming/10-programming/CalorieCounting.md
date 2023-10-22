@@ -192,7 +192,7 @@ exit(EXIT_SUCCESS);
 
 If we compile and run this code, we get the following output:
 
-```bash
+```nasm
 $ gcc -o solve solve.c && ./solve
 flag{209914}
 ```

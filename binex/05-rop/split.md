@@ -40,7 +40,7 @@ Here's what we found:
 
 Let's run the binary and see what happens:
 
-```bash
+```nasm
 $ ./split
 split by ROP Emporium
 x86_64
@@ -137,7 +137,7 @@ Getting the padding is the easiest part. We start writing to `rbp-0x20`, so we m
 
 We only need one major gadget: the ability to write to `rdi`. We want to write to `rdi` from the stack. This calls for a gadget that does the following:
 
-```as
+```nasm
 pop rdi; ret;
 ```
 
@@ -153,19 +153,19 @@ To show all gadgets, we can use:
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary split
 ```
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper -f split
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```bash
+```nasm
 > /R
 ```
 {% endtabs %}
@@ -178,19 +178,19 @@ This will show a long list of every gadget that the libraries can find. We can f
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary split --only "pop|ret"
 ```
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper -f split | grep rdi
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```bash
+```nasm
 > /R pop rdi
 ```
 {% endtab %}
@@ -198,7 +198,7 @@ $ ropper -f split | grep rdi
 
 The third instruction is `ROPgadget` exclusive, and lets you only show binaries with specific instruction sets. Based on all these instructions, we should find the following gadget:
 
-```as
+```nasm
 0x00000000004007c3 : pop rdi ; ret
 ```
 
@@ -210,7 +210,7 @@ The left is the address of the instruction, and the right is the gadget. This is
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  search-pattern "/bin/cat flag.txt"
 [+] Searching '/bin/cat flag.txt' in memory
 [+] In '/home/joybuzzer/Documents/vunrotc/public/binex/05-rop/split/src/split'(0x601000-0x602000), permission=rw-
@@ -229,7 +229,7 @@ This shows us the string is at `0x601060`.
 
 We know this is inside `usefulFunction`. We want to use this rather than going directly to better simulate the code truly executing this instruction.
 
-```as
+```nasm
    0x000000000040074b <+9>:	call   0x400560 <system@plt>
 ```
 

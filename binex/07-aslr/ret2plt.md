@@ -18,7 +18,7 @@ Be sure that you've read the introduction page for ASLR. This is important for d
 
 If we perform `checksec` on this binary:
 
-```bash
+```nasm
 $ checksec ret2plt
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/07-aslr/ret2plt/src/ret2plt'
     Arch:     i386-32-little

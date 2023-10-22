@@ -49,7 +49,7 @@ int main(void)
 
 This code is **not** susceptible to stack smashing because the `fgets` call verifies that no more than `100` bytes of data are inputted into the buffer. However, the `printf` call is vulnerable. If we choose our input to have format specifiers, we can leak data from registers or the stack. Consider this run:
 
-```bash
+```nasm
 $ ./vuln
 %x %x %x
 78252078 fbad2288 366932a9

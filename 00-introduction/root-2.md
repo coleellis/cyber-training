@@ -23,7 +23,7 @@ flag{grep_is_super_useful}
 
 ## Solution
 
-```bash
+```nasm
 $ find . -type f -name "flag_*"
 
 ./YGE8xafxo1aDyyDaP64vFT5R/OYPuOaJxX4NlA2doAGOpb04y/v6nhCxEFm5Jk8xXfwi9vSEXS/i2nqw0ZUHwUy5G9udh0PqZCe/CQY19DujzCEOFWExctTxlA8e/JvPJDSFg5SmSEjQzDvYXBfjr/gF69ZBN0AZ5eke6UKGbn8zUH/83CTJbSYq5nsMmDit68YSLwL/uvHFF8dtJ2ieBAgy2EzMXyqd/jyqsAjz1XqC0wRP7YcsUR3J5/VC7GYjfmHx8TDJDalRHXQp9u/uKNLe5JiOBzvpTgUWaiGORLu/cFMWlaQzHYNev7SBxsTsv9P7/QnBl6PAppZ6phL6FqPRoCTd6/flag_grep_is_super_useful

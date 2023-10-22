@@ -12,7 +12,7 @@ This binary is arguably more complex than `location`, and will be a lot more ann
 
 Checking security, we see that
 
-```bash
+```nasm
 $ checksec shell
 [*] '/home/joybuzzer/Documents/vunrotc/public/02-shellcodes/shell/src/shell'
     Arch:     i386-32-little
@@ -44,7 +44,7 @@ The main difference is getting the address to jump. Unlike `location`, we are no
 
 {% tabs %}
 {% tab title="GDB" %}
-```as
+```nasm
 gef➤  p/x $ebp-0x134
 $1 = 0xffffd484
 ```
