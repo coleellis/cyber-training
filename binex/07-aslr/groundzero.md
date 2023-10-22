@@ -51,7 +51,12 @@ gef➤  search-pattern "cat flag.txt"
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x565ff221]> e search.in=dbg.maps
+[0x565ff221]> / /bin/sh
+...
+0xf7dbd0f5 hit1_0 .b/strtod_l.c-c/bin/shexit 0MSGVERB.
+```
 {% endtab %}
 {% endtabs %}
 
@@ -85,7 +90,15 @@ gef➤  x/wx 0xf7c48150
 {% endtab %}
 
 {% tab title="Radare2" %}
+```nasm
+[0x565ff1f0]> pxw 8 @ esp
+0xfffeac70  0x56600008 0xf7c48170                        ..`Vp...
+[0x565ff1f0]> ps @ 0x56600008
+System is at: %lp
 
+[0x565ff1f0]> pxw 4 @ 0xf7c48170
+0xf7c48170  0xfb1e0ff3                                   ....
+```
 {% endtab %}
 {% endtabs %}
 
