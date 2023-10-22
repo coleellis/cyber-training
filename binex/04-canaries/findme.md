@@ -50,7 +50,14 @@ gef➤  x/20wx $esp
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x08049214]> pxw 80@esp
+0xff8479c0  0xff8479d0 0x00000014 0x00000000 0x080491d2  .y..............
+0xff8479d0  0x00000000 0x00000000 0x01000000 0x0000000b  ................
+0xff8479e0  0xf7f4a540 0x00000000 0xf7c184be 0xf7e2a054  @...........T...
+0xff8479f0  0xf7f44680 0xf7f5cf90 0xf7c184be 0xf7f44680  .F...........F..
+0xff847a00  0xff847a40 0xf7f4484c 0xf7f44d00 0x6766b600  @z..LH...M....fg
+```
 {% endtab %}
 {% endtabs %}
 
@@ -69,7 +76,14 @@ gef➤  python print((0xffffd59c-0xffffd550)/4)
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x08049214]> pxw 4 @ esp
+0xff8479c0  0xff8479d0                                   .y..
+[0x08049214]> pxw 4 @ ebp-0xc
+0xff847a0c  0x6766b600                                   ..fg
+[0x08049214]> ?vi (0xff847a0c-0xff8479c0)/4
+19
+```
 {% endtab %}
 {% endtabs %}
 

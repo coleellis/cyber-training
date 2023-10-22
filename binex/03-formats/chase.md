@@ -56,17 +56,21 @@ Using `gdb`, we can check the arguments:
 {% tabs %}
 {% tab title="GDB" %}
 ```nasm
-(gdb) disas *(main+49)
+(gdb) b *(main+49)
 (gdb) r
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0xf7f808a0]> db main+49
+[0xf7f808a0]> dc
+INFO: hit breakpoint at: 0x80491f7
+```
 {% endtab %}
 {% endtabs %}
 
-`gef` will predict the arguments for us:
+`gdb`'s GEF will predict the arguments for us:
 
 ```nasm
 fopen@plt (
@@ -77,7 +81,7 @@ fopen@plt (
 )
 ```
 
-If we didn't have `gef`, we could check the stack:
+If we didn't have GEF, we could check the stack:
 
 {% tabs %}
 {% tab title="GDB" %}
@@ -92,7 +96,14 @@ gef➤  x/s 0x0804a008
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x080491f7]> pxw 8 @ esp
+0xffedc180  0x0804a00a 0x0804a008                        ........
+[0x080491f7]> ps @ 0x0804a00a
+flag.txt
+[0x080491f7]> ps @ 0x0804a008
+r
+```
 {% endtab %}
 {% endtabs %}
 
@@ -158,7 +169,10 @@ gef➤  x/wx 0xf7e2a620
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x0804921e]> pxw 12 @ esp
+0xffec92c0  0xffec9338 0x00000064 0x08e5e1a0             8...d.......
+```
 {% endtab %}
 {% endtabs %}
 
@@ -218,7 +232,19 @@ gef➤  x/40wx $esp
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x0804927b]> pxw@esp
+0xff9803a0  0xff9803b4 0x00000064 0xf7e2a620 0x080491e0  ....d... .......
+0xff9803b0  0xf7c184be 0xf7f032a4 0xf7c05674 0xff98042c  .....2..tV..,...
+0xff9803c0  0xf7f30ba0 0x00000002 0xf7ef1d00 0x00000001  ................
+0xff9803d0  0x00000000 0x00000001 0xf7ef1680 0x00000001  ................
+0xff9803e0  0x00c00000 0xf7f30c0c 0xff980464 0x00000000  ........d.......
+0xff9803f0  0xf7f30000 0x00000020 0x00000000 0xff98046c  .... .......l...
+0xff980400  0xf7f30ba0 0x00000001 0xf7ef1990 0x00000001  ................
+0xff980410  0x00000000 0x00000001 0x67616c66 0x6d65747b  ........flag{tem
+0xff980420  0x61726f70 0x665f7972 0x7d67616c 0xf7ef000a  porary_flag}....
+0xff980430  0xf7f30608 0x00000020 0x00000000 0xff980680  .... ...........
+```
 {% endtab %}
 {% endtabs %}
 
@@ -233,7 +259,11 @@ gef➤  x/s 0xffffd568
 {% endtab %}
 
 {% tab title="Radare2" %}
+```nasm
+[0x0804927b]> ps @ 0xff980418
+flag{temporary_flag}
 
+```
 {% endtab %}
 {% endtabs %}
 
