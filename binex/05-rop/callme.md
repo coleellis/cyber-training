@@ -71,7 +71,30 @@ Unique gadgets found: 14
 {% endtab %}
 
 {% tab title="ropper" %}
+```bash
+$ ropper -f callme --search "pop|ret"
+[INFO] Load gadgets for section: LOAD
+[LOAD] loading... 100%
+[LOAD] removing double gadgets... 100%
+[INFO] Searching for gadgets: pop|ret
 
+[INFO] File: callme
+0x000000000040099c: pop r12; pop r13; pop r14; pop r15; ret; 
+0x000000000040099e: pop r13; pop r14; pop r15; ret; 
+0x00000000004009a0: pop r14; pop r15; ret; 
+0x00000000004009a2: pop r15; ret; 
+0x00000000004007bb: pop rbp; mov edi, 0x601070; jmp rax; 
+0x000000000040099b: pop rbp; pop r12; pop r13; pop r14; pop r15; ret; 
+0x000000000040099f: pop rbp; pop r14; pop r15; ret; 
+0x00000000004007c8: pop rbp; ret; 
+0x000000000040093c: pop rdi; pop rsi; pop rdx; ret; 
+0x00000000004009a3: pop rdi; ret; 
+0x000000000040093e: pop rdx; ret; 
+0x00000000004009a1: pop rsi; pop r15; ret; 
+0x000000000040093d: pop rsi; pop rdx; ret; 
+0x000000000040099d: pop rsp; pop r13; pop r14; pop r15; ret; 
+0x00000000004006be: ret; 
+```
 {% endtab %}
 
 {% tab title="Radare2" %}

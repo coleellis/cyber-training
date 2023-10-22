@@ -21,7 +21,16 @@ $ ROPgadget --binary stepup | grep "pop rdi"
 {% endtab %}
 
 {% tab title="ropper" %}
+```bash
+$ ropper -f stepup --search "pop rdi"
+[INFO] Load gadgets from cache
+[LOAD] loading... 100%
+[LOAD] removing double gadgets... 100%
+[INFO] Searching for gadgets: pop rdi
 
+[INFO] File: stepup
+0x00000000004011db: pop rdi; ret; 
+```
 {% endtab %}
 
 {% tab title="Radare2" %}

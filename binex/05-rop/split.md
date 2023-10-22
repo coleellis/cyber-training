@@ -163,6 +163,11 @@ $ ROPgadget --binary split
 $ ropper -f split
 ```
 {% endtab %}
+
+{% tab title="Radare2" %}
+```bash
+> /R
+```
 {% endtabs %}
 
 {% hint style="info" %}
@@ -185,7 +190,9 @@ $ ropper -f split | grep rdi
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```bash
+> /R pop rdi
+```
 {% endtab %}
 {% endtabs %}
 

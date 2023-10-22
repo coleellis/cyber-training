@@ -149,7 +149,27 @@ Gadgets information
 {% endtab %}
 
 {% tab title="ropper" %}
+```bash
+$ ropper --file write4 --search "pop|ret" 
+[INFO] Load gadgets for section: LOAD
+[LOAD] loading... 100%
+[LOAD] removing double gadgets... 100%
+[INFO] Searching for gadgets: pop|ret
 
+[INFO] File: write4
+0x000000000040068c: pop r12; pop r13; pop r14; pop r15; ret; 
+0x000000000040068e: pop r13; pop r14; pop r15; ret; 
+0x0000000000400690: pop r14; pop r15; ret; 
+0x0000000000400692: pop r15; ret; 
+0x000000000040057b: pop rbp; mov edi, 0x601038; jmp rax; 
+0x000000000040068b: pop rbp; pop r12; pop r13; pop r14; pop r15; ret; 
+0x000000000040068f: pop rbp; pop r14; pop r15; ret; 
+0x0000000000400588: pop rbp; ret; 
+0x0000000000400693: pop rdi; ret; 
+0x0000000000400691: pop rsi; pop r15; ret; 
+0x000000000040068d: pop rsp; pop r13; pop r14; pop r15; ret; 
+0x00000000004004e6: ret; 
+```
 {% endtab %}
 
 {% tab title="Radare2" %}
@@ -202,7 +222,44 @@ Unique gadgets found: 15
 {% endtab %}
 
 {% tab title="ropper" %}
+```bash
+$ ropper --file write4 --search "mov|pop|ret"
+[INFO] Load gadgets from cache
+[LOAD] loading... 100%
+[LOAD] removing double gadgets... 100%
+[INFO] Searching for gadgets: mov|pop|ret
 
+[INFO] File: write4
+0x00000000004005e2: mov byte ptr [rip + 0x200a4f], 1; pop rbp; ret; 
+0x0000000000400606: mov dword ptr [rbp + 0x48], edx; mov ebp, esp; call 0x500; mov eax, 0; pop rbp; ret; 
+0x0000000000400629: mov dword ptr [rsi], edi; ret; 
+0x0000000000400610: mov eax, 0; pop rbp; ret; 
+0x00000000004004d5: mov eax, dword ptr [rip + 0x200b1d]; test rax, rax; je 0x4e2; call rax; 
+0x00000000004004d5: mov eax, dword ptr [rip + 0x200b1d]; test rax, rax; je 0x4e2; call rax; add rsp, 8; ret; 
+0x0000000000400609: mov ebp, esp; call 0x500; mov eax, 0; pop rbp; ret; 
+0x00000000004005db: mov ebp, esp; call 0x560; mov byte ptr [rip + 0x200a4f], 1; pop rbp; ret; 
+0x0000000000400619: mov ebp, esp; mov edi, 0x4006b4; call 0x510; nop; pop rbp; ret; 
+0x000000000040061b: mov edi, 0x4006b4; call 0x510; nop; pop rbp; ret; 
+0x000000000040057c: mov edi, 0x601038; jmp rax; 
+0x0000000000400628: mov qword ptr [r14], r15; ret; 
+0x00000000004004d4: mov rax, qword ptr [rip + 0x200b1d]; test rax, rax; je 0x4e2; call rax; 
+0x00000000004004d4: mov rax, qword ptr [rip + 0x200b1d]; test rax, rax; je 0x4e2; call rax; add rsp, 8; ret; 
+0x0000000000400608: mov rbp, rsp; call 0x500; mov eax, 0; pop rbp; ret; 
+0x00000000004005da: mov rbp, rsp; call 0x560; mov byte ptr [rip + 0x200a4f], 1; pop rbp; ret; 
+0x0000000000400618: mov rbp, rsp; mov edi, 0x4006b4; call 0x510; nop; pop rbp; ret; 
+0x000000000040068c: pop r12; pop r13; pop r14; pop r15; ret; 
+0x000000000040068e: pop r13; pop r14; pop r15; ret; 
+0x0000000000400690: pop r14; pop r15; ret; 
+0x0000000000400692: pop r15; ret; 
+0x000000000040057b: pop rbp; mov edi, 0x601038; jmp rax; 
+0x000000000040068b: pop rbp; pop r12; pop r13; pop r14; pop r15; ret; 
+0x000000000040068f: pop rbp; pop r14; pop r15; ret; 
+0x0000000000400588: pop rbp; ret; 
+0x0000000000400693: pop rdi; ret; 
+0x0000000000400691: pop rsi; pop r15; ret; 
+0x000000000040068d: pop rsp; pop r13; pop r14; pop r15; ret; 
+0x00000000004004e6: ret; 
+```
 {% endtab %}
 
 {% tab title="Radare2" %}
