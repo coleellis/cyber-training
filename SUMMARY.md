@@ -90,3 +90,6 @@
   * [Context](toolkit/pwntools/context.md)
   * [Sending/Receiving Data](toolkit/pwntools/data-transfer.md)
   * [The ELF Class](toolkit/pwntools/elf.md)
+* [My Workflow](toolkit/workflow/README.md)
+  * [Tmux](toolkit/workflow/tmux.md)
+  * [Vim](toolkit/workflow/vim.md)
