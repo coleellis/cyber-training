@@ -171,10 +171,6 @@ $ ropper --file write4 --search "pop|ret"
 0x00000000004004e6: ret; 
 ```
 {% endtab %}
-
-{% tab title="Radare2" %}
-
-{% endtab %}
 {% endtabs %}
 
 This seems useful enough. This provides us a way to load the first two parameter registers, meaning that we can pass an address into `print_file`. We know that the end of our payload will look something like:
@@ -260,10 +256,6 @@ $ ropper --file write4 --search "mov|pop|ret"
 0x000000000040068d: pop rsp; pop r13; pop r14; pop r15; ret; 
 0x00000000004004e6: ret; 
 ```
-{% endtab %}
-
-{% tab title="Radare2" %}
-
 {% endtab %}
 {% endtabs %}
 

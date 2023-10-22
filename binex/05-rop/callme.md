@@ -96,10 +96,6 @@ $ ropper -f callme --search "pop|ret"
 0x00000000004006be: ret; 
 ```
 {% endtab %}
-
-{% tab title="Radare2" %}
-
-{% endtab %}
 {% endtabs %}
 
 

@@ -34,7 +34,11 @@ $ ropper -f stepup --search "pop rdi"
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```bash
+[0x00401169]> /R pop rdi
+  0x004011db                 5f  pop rdi
+  0x004011dc                 c3  ret
+```
 {% endtab %}
 {% endtabs %}
 

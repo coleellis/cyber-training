@@ -73,10 +73,6 @@ $ ropper -f badchars --search "pop|ret"
 0x00000000004004ee: ret; 
 ```
 {% endtab %}
-
-{% tab title="Radare2" %}
-
-{% endtab %}
 {% endtabs %}
 
 These are a good start. To write to memory, we will need a `mov` gadget that writes to a `QWORD PTR` from a register.
@@ -124,10 +120,6 @@ $ ropper -f badchars --search "mov|ret"
 0x00000000004004ee: ret; 
 ```
 {% endtab %}
-
-{% tab title="Radare2" %}
-
-{% endtab %}
 {% endtabs %}
 
 We opt for the second gadget rather than the first because we can write all `8` bytes rather than `4` at a time. We'll take note that we need a `pop r12` and `pop r13` gadget, which we have:
@@ -167,10 +159,6 @@ $ ropper -f badchars --search "xor|ret"
 0x0000000000400629: xor byte ptr [rdi], dh; ret; 
 0x00000000004004ee: ret; 
 ```
-{% endtab %}
-
-{% tab title="Radare2" %}
-
 {% endtab %}
 {% endtabs %}
 
