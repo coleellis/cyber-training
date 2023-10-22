@@ -56,7 +56,28 @@ Non-debugging symbols:
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0xf7f878a0]> afl
+0x08049090    1     44 entry0
+0x080490bd    1      4 fcn.080490bd
+0x08049040    1      6 sym.imp.__libc_start_main
+0x080490f0    4     40 sym.deregister_tm_clones
+0x08049130    4     53 sym.register_tm_clones
+0x08049170    3     34 sym.__do_global_dtors_aux
+0x080491a0    1      6 sym.frame_dummy
+0x080490e0    1      4 sym.__x86.get_pc_thunk.bx
+0x08049258    1     24 sym._fini
+0x080491a6    4     73 sym.win
+0x080490d0    1      5 sym._dl_relocate_static_pie
+0x0804923c    1     24 main
+0x08049254    1      4 sym.__x86.get_pc_thunk.ax
+0x080491ef    1     77 sym.read_in
+0x08049070    1      6 sym.imp.puts
+0x08049050    1      6 sym.imp.fflush
+0x08049060    1      6 sym.imp.gets
+0x08049000    3     36 sym._init
+0x08049080    1      6 sym.imp.system
+```
 {% endtab %}
 {% endtabs %}
 
@@ -95,7 +116,37 @@ Dump of assembler code for function win:
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0xf7f878a0]> pdf@sym.win
+┌ 73: sym.win (int32_t arg_8h);
+│           ; arg int32_t arg_8h @ ebp+0x8
+│           ; var int32_t var_4h @ ebp-0x4
+│           0x080491a6      55             push ebp
+│           0x080491a7      89e5           mov ebp, esp
+│           0x080491a9      53             push ebx
+│           0x080491aa      83ec04         sub esp, 4
+│           0x080491ad      e8a2000000     call sym.__x86.get_pc_thunk.ax
+│           0x080491b2      054e2e0000     add eax, 0x2e4e
+│           0x080491b7      817d08efbead.  cmp dword [arg_8h], 0xdeadbeef
+│       ┌─< 0x080491be      7416           je 0x80491d6
+│       │   0x080491c0      83ec0c         sub esp, 0xc
+│       │   0x080491c3      8d9008e0ffff   lea edx, [eax - 0x1ff8]
+│       │   0x080491c9      52             push edx
+│       │   0x080491ca      89c3           mov ebx, eax
+│       │   0x080491cc      e89ffeffff     call sym.imp.puts           ; int puts(const char *s)
+│       │   0x080491d1      83c410         add esp, 0x10
+│      ┌──< 0x080491d4      eb14           jmp 0x80491ea
+│      │└─> 0x080491d6      83ec0c         sub esp, 0xc
+│      │    0x080491d9      8d9012e0ffff   lea edx, [eax - 0x1fee]
+│      │    0x080491df      52             push edx
+│      │    0x080491e0      89c3           mov ebx, eax
+│      │    0x080491e2      e899feffff     call sym.imp.system         ; int system(const char *string)
+│      │    0x080491e7      83c410         add esp, 0x10
+│      │    ; CODE XREF from sym.win @ 0x80491d4(x)
+│      └──> 0x080491ea      8b5dfc         mov ebx, dword [var_4h]
+│           0x080491ed      c9             leave
+└           0x080491ee      c3             ret
+```
 {% endtab %}
 {% endtabs %}
 
@@ -161,12 +212,10 @@ puts@plt (
 )
 ```
 
-(_If you're struggling to find this for yourself, attach a gdb instance to your exploit and then step through it until you reach the `puts` call._)
+(_If you're struggling to find this for yourself, attach a `gdb` instance to your exploit and then step through it until you reach the `puts` call._)
 
 What is happening? Checking the stack frame at the time of the `cmp` call shows us:
 
-{% tabs %}
-{% tab title="GDB" %}
 ```nasm
 gef➤  x/20wx $esp
 0xffdcb134:	0x41414141	0x41414141	0x41414141	0xdeadbeef
@@ -177,12 +226,6 @@ gef➤  x/20wx $esp
 gef➤  x/wx $ebp+0x8
 0xffdcb144:	0x00000000
 ```
-{% endtab %}
-
-{% tab title="Radare2" %}
-
-{% endtab %}
-{% endtabs %}
 
 We're off by one chunk? _Why is that?_ Since we're jumping to `win()` by changing the value of the return pointer, rather than going there via `call win`, a return pointer is never pushed on the stack. However, since the code doesn't expect us to do this, it treats the stack as if there still is one.
 
