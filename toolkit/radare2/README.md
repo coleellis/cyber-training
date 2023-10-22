@@ -18,13 +18,13 @@ Installation depends on the operating system you are running. The main two opera
 
 {% tabs %}
 {% tab title="Kali Linux" %}
-```
+```nasm
 sudo apt install radare2
 ```
 {% endtab %}
 
 {% tab title="Ubuntu Linux" %}
-```
+```nasm
 sudo snap install radare2
 ```
 {% endtab %}
@@ -36,13 +36,13 @@ Based on your installation, the running command is slightly different. Here are 
 
 {% tabs %}
 {% tab title="Kali Linux" %}
-```
+```nasm
 r2 -d -A <binary>
 ```
 {% endtab %}
 
 {% tab title="Ubuntu Linux" %}
-```
+```nasm
 radare2 -d -A <binary>
 ```
 {% endtab %}

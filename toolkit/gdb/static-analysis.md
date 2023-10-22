@@ -18,7 +18,7 @@ We can use `checksec` in `gdb` to get the security features.
 gef➤  checksec
 ```
 
-```
+```nasm
 [+] checksec for '/home/joybuzzer/win32'
 Canary                        : ✘ 
 NX                            : ✘ 

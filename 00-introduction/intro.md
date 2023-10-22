@@ -136,7 +136,7 @@ We need to understand how 64-bit functions pass parameters. These are done **via
 
 The difference between `rdi` and `edi` is confusing. `rdi` and `edi` are connected to the same storage location, meaning that changing `edi` affects `rdi`, and vice versa. `edi` is just the bottom half of `rdi`, as we see below.
 
-```
+```nasm
 rdi = [ _ _ _ _ _ _ _ _ ]
         edi = [ _ _ _ _ ] 
 ```
@@ -201,7 +201,7 @@ The first command is the most confusing. `lea` stands for **Load Effective Addre
 
 After this, it moves this address into `rdi`. If we check what's at this address, we see the following:
 
-```
+```nasm
 gef➤  x/s 0x2004
 0x2004:	"Enter the flag here: "
 ```

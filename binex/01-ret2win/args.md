@@ -111,7 +111,7 @@ Let's check out the two routes:
 
 _What is `DWORD PTR [rbp+0x8]`?_ Let's think about it in terms of the stack. The stack frame is going to be located at `rbp`. After `rbp` is going to be the _return pointer_, as we saw in our stack frame from earlier:
 
-```
+```nasm
    |-- rsp
    v
 [... | ... buffer for function ... | base pointer | return pointer | ... ]

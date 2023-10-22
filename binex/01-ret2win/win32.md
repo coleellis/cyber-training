@@ -12,7 +12,7 @@ This binary is going to be the first introduction to a stack overflow. A **stack
 
 From the instructions, we see this line:
 
-```
+```nasm
 nc vunrotc.cole-ellis.com 1100
 ```
 
@@ -32,7 +32,7 @@ Now, let's move on to the binary.
 
 Let's make the first security check using `checksec`.
 
-```
+```nasm
 [*] '/home/joybuzzer/Documents/vunrotc/live/00-introduction/win32/win32'
     Arch:     i386-32-little
     RELRO:    Partial RELRO
@@ -380,13 +380,13 @@ Something peculiar that we notice is that `0xffffd618` (the location we're writi
 
 {% tabs %}
 {% tab title="GDB" %}
-```
+```nasm
 0xfffdd000 0xffffe000    0x21000        0x0  rwxp   [stack]
 ```
 {% endtab %}
 
 {% tab title="Radare2" %}
-```
+```nasm
 0xff930000 - 0xff951000 - usr   132K s rwx [stack] [stack] ; map._stack_.rwx
 ```
 {% endtab %}
@@ -733,7 +733,7 @@ proc = remote('vunrotc.cole-ellis.com', 1100)
 
 Now let's run this:
 
-```
+```nasm
 [+] Opening connection to vunrotc.cole-ellis.com on port 1100: Done
 [*] Switching to interactive mode
 Can you figure out how to win here?

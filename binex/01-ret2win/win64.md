@@ -150,7 +150,7 @@ The same "assembly dance" is happening in this binary. Let's go over this proces
 
 This means that after the assembly dance, our stack should look like this:
 
-```
+```nasm
    |-- rsp
    v
 [... | ... 0x30 bytes ... | base pointer | return pointer | ... ]

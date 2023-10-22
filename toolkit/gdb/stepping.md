@@ -172,7 +172,7 @@ A **stack trace** is a list of all the functions that have been called up to thi
 
 To view the stack trace, use the `backtrace` command (`bt` for short).
 
-```
+```nasm
 gef➤  bt
 #0  0xf7feb2f7 in ?? () from /lib/ld-linux.so.2
 #1  0xf7fd6ead in ?? () from /lib/ld-linux.so.2
@@ -197,7 +197,7 @@ GEF also previews this stack trace:
 
 You can use `up` and `down` to move up and down the stack trace. This is useful for viewing the contents of the stack frame. These take optional arguments of how many frames to move up or down.
 
-```
+```nasm
 gef➤  up 2
 #2  0xf7fd9004 in ?? () from /lib/ld-linux.so.2
 ```
