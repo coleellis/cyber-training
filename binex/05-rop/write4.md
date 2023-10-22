@@ -16,7 +16,45 @@ When we open the binary in `gdb` / `radare2`, we notice that `pwnme` function is
 
 {% tabs %}
 {% tab title="GDB" %}
-
+```nasm
+gef➤  disas pwnme 
+Dump of assembler code for function pwnme:
+   0x00000000000008aa <+0>:	push   rbp
+   0x00000000000008ab <+1>:	mov    rbp,rsp
+   0x00000000000008ae <+4>:	sub    rsp,0x20
+   0x00000000000008b2 <+8>:	mov    rax,QWORD PTR [rip+0x200727]        # 0x200fe0
+   0x00000000000008b9 <+15>:	mov    rax,QWORD PTR [rax]
+   0x00000000000008bc <+18>:	mov    ecx,0x0
+   0x00000000000008c1 <+23>:	mov    edx,0x2
+   0x00000000000008c6 <+28>:	mov    esi,0x0
+   0x00000000000008cb <+33>:	mov    rdi,rax
+   0x00000000000008ce <+36>:	call   0x790 <setvbuf@plt>
+   0x00000000000008d3 <+41>:	lea    rdi,[rip+0x106]        # 0x9e0
+   0x00000000000008da <+48>:	call   0x730 <puts@plt>
+   0x00000000000008df <+53>:	lea    rdi,[rip+0x111]        # 0x9f7
+   0x00000000000008e6 <+60>:	call   0x730 <puts@plt>
+   0x00000000000008eb <+65>:	lea    rax,[rbp-0x20]
+   0x00000000000008ef <+69>:	mov    edx,0x20
+   0x00000000000008f4 <+74>:	mov    esi,0x0
+   0x00000000000008f9 <+79>:	mov    rdi,rax
+   0x00000000000008fc <+82>:	call   0x760 <memset@plt>
+   0x0000000000000901 <+87>:	lea    rdi,[rip+0xf8]        # 0xa00
+   0x0000000000000908 <+94>:	call   0x730 <puts@plt>
+   0x000000000000090d <+99>:	lea    rdi,[rip+0x115]        # 0xa29
+   0x0000000000000914 <+106>:	mov    eax,0x0
+   0x0000000000000919 <+111>:	call   0x750 <printf@plt>
+   0x000000000000091e <+116>:	lea    rax,[rbp-0x20]
+   0x0000000000000922 <+120>:	mov    edx,0x200
+   0x0000000000000927 <+125>:	mov    rsi,rax
+   0x000000000000092a <+128>:	mov    edi,0x0
+   0x000000000000092f <+133>:	call   0x770 <read@plt>
+   0x0000000000000934 <+138>:	lea    rdi,[rip+0xf1]        # 0xa2c
+   0x000000000000093b <+145>:	call   0x730 <puts@plt>
+   0x0000000000000940 <+150>:	nop
+   0x0000000000000941 <+151>:	leave  
+   0x0000000000000942 <+152>:	ret    
+End of assembler dump.
+```
 {% endtab %}
 
 {% tab title="Radare2" %}
@@ -71,7 +109,45 @@ Searching around the binary, we find the function `print_file`:
 
 {% tabs %}
 {% tab title="GDB" %}
-
+```nasm
+gef➤  disas print_file 
+Dump of assembler code for function print_file:
+   0x0000000000000943 <+0>:	push   rbp
+   0x0000000000000944 <+1>:	mov    rbp,rsp
+   0x0000000000000947 <+4>:	sub    rsp,0x40
+   0x000000000000094b <+8>:	mov    QWORD PTR [rbp-0x38],rdi
+   0x000000000000094f <+12>:	mov    QWORD PTR [rbp-0x8],0x0
+   0x0000000000000957 <+20>:	mov    rax,QWORD PTR [rbp-0x38]
+   0x000000000000095b <+24>:	lea    rsi,[rip+0xd5]        # 0xa37
+   0x0000000000000962 <+31>:	mov    rdi,rax
+   0x0000000000000965 <+34>:	call   0x7a0 <fopen@plt>
+   0x000000000000096a <+39>:	mov    QWORD PTR [rbp-0x8],rax
+   0x000000000000096e <+43>:	cmp    QWORD PTR [rbp-0x8],0x0
+   0x0000000000000973 <+48>:	jne    0x997 <print_file+84>
+   0x0000000000000975 <+50>:	mov    rax,QWORD PTR [rbp-0x38]
+   0x0000000000000979 <+54>:	mov    rsi,rax
+   0x000000000000097c <+57>:	lea    rdi,[rip+0xb6]        # 0xa39
+   0x0000000000000983 <+64>:	mov    eax,0x0
+   0x0000000000000988 <+69>:	call   0x750 <printf@plt>
+   0x000000000000098d <+74>:	mov    edi,0x1
+   0x0000000000000992 <+79>:	call   0x7b0 <exit@plt>
+   0x0000000000000997 <+84>:	mov    rdx,QWORD PTR [rbp-0x8]
+   0x000000000000099b <+88>:	lea    rax,[rbp-0x30]
+   0x000000000000099f <+92>:	mov    esi,0x21
+   0x00000000000009a4 <+97>:	mov    rdi,rax
+   0x00000000000009a7 <+100>:	call   0x780 <fgets@plt>
+   0x00000000000009ac <+105>:	lea    rax,[rbp-0x30]
+   0x00000000000009b0 <+109>:	mov    rdi,rax
+   0x00000000000009b3 <+112>:	call   0x730 <puts@plt>
+   0x00000000000009b8 <+117>:	mov    rax,QWORD PTR [rbp-0x8]
+   0x00000000000009bc <+121>:	mov    rdi,rax
+   0x00000000000009bf <+124>:	call   0x740 <fclose@plt>
+   0x00000000000009c4 <+129>:	mov    QWORD PTR [rbp-0x8],0x0
+   0x00000000000009cc <+137>:	nop
+   0x00000000000009cd <+138>:	leave  
+   0x00000000000009ce <+139>:	ret    
+End of assembler dump.
+```
 {% endtab %}
 
 {% tab title="Radare2" %}
@@ -306,7 +382,19 @@ Mapped address spaces:
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x7f8048c7c290]> dm
+0x0000000000400000 - 0x0000000000401000 - usr     4K s r-x /home/joybuzzer/write4 /home/joybuzzer/write4 ; map._home_joybuzzer_write4.r_x
+0x0000000000600000 - 0x0000000000602000 - usr     8K s rw- /home/joybuzzer/write4 /home/joybuzzer/write4 ; map._home_joybuzzer_write4.rw_
+0x00007f8048c5c000 - 0x00007f8048c5e000 - usr     8K s r-- /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+0x00007f8048c5e000 - 0x00007f8048c88000 * usr   168K s r-x /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 ; map._usr_lib_x86_64_linux_gnu_ld_linux_x86_64.so.2.r_x
+0x00007f8048c88000 - 0x00007f8048c93000 - usr    44K s r-- /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 ; map._usr_lib_x86_64_linux_gnu_ld_linux_x86_64.so.2.r__
+0x00007f8048c94000 - 0x00007f8048c98000 - usr    16K s rw- /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 ; map._usr_lib_x86_64_linux_gnu_ld_linux_x86_64.so.2.rw_
+0x00007ffe793f6000 - 0x00007ffe79417000 - usr   132K s rw- [stack] [stack] ; map._stack_.rw_
+0x00007ffe7948c000 - 0x00007ffe79490000 - usr    16K s r-- [vvar] [vvar] ; map._vvar_.r__
+0x00007ffe79490000 - 0x00007ffe79492000 - usr     8K s r-x [vdso] [vdso] ; map._vdso_.r_x
+0xffffffffff600000 - 0xffffffffff601000 - usr     4K s --x [vsyscall] [vsyscall] ; map._vsyscall_.__x
+```
 {% endtab %}
 {% endtabs %}
 
@@ -330,7 +418,19 @@ gef➤  x/20gx 0x601000
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x7f8048c7c290]> pxw 160 @ 0x601000
+0x00601000  0x00600e00 0x00000000 0x00000000 0x00000000  ..`.............
+0x00601010  0x00000000 0x00000000 0x00400506 0x00000000  ..........@.....
+0x00601020  0x00400516 0x00000000 0x00000000 0x00000000  ..@.............
+0x00601030  0x00000000 0x00000000 0x00000000 0x00000000  ................
+0x00601040  0x00000000 0x00000000 0x00000000 0x00000000  ................
+0x00601050  0x00000000 0x00000000 0x00000000 0x00000000  ................
+0x00601060  0x00000000 0x00000000 0x00000000 0x00000000  ................
+0x00601070  0x00000000 0x00000000 0x00000000 0x00000000  ................
+0x00601080  0x00000000 0x00000000 0x00000000 0x00000000  ................
+0x00601090  0x00000000 0x00000000 0x00000000 0x00000000  ................
+```
 {% endtab %}
 {% endtabs %}
 

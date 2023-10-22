@@ -219,7 +219,12 @@ gef➤  search-pattern "/bin/cat flag.txt"
 {% endtab %}
 
 {% tab title="Radare2" %}
-
+```nasm
+[0x00400697]> e search.in=dbg.maps
+[0x00400697]> / /bin/cat flag.txt
+...
+0x00601060 hit0_0 ./bin/cat flag.txt
+```
 {% endtab %}
 {% endtabs %}
 
