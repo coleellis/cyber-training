@@ -69,22 +69,6 @@
 
 ## Toolkit
 
-* [Mastering GDB](toolkit/gdb/README.md)
-  * [Static Analysis](toolkit/gdb/static-analysis.md)
-  * [Stepping and Continuing](toolkit/gdb/stepping.md)
-  * [Viewing Data](toolkit/gdb/viewing-data.md)
-  * [GEF Features](toolkit/gdb/gef/README.md)
-    * [Ease of Use](toolkit/gdb/gef/ease-of-use.md)
-    * [Security Measures](toolkit/gdb/gef/security.md)
-    * [Memory Analysis](toolkit/gdb/gef/memory-analysis.md)
-    * [Debugging UI](toolkit/gdb/gef/debugging-ui.md)
-    * [Exploit Development](toolkit/gdb/gef/exploit-dev.md)
-* [Mastering Radare2](toolkit/radare2/README.md)
-  * [Static Analysis](toolkit/radare2/static-analysis.md)
-  * [Stepping and Continuing](toolkit/radare2/stepping.md)
-  * [Viewing Data](toolkit/radare2/viewing-data.md)
-  * [Visual Mode](toolkit/radare2/visual-mode.md)
-  * [Graph Mode](toolkit/radare2/graph-mode.md)
 * [Using Pwntools](toolkit/pwntools/README.md)
   * [Establishing Connection](toolkit/pwntools/connection.md)
   * [Context](toolkit/pwntools/context.md)
