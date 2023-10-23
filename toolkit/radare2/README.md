@@ -25,27 +25,20 @@ sudo apt install radare2
 
 {% tab title="Ubuntu Linux" %}
 ```nasm
-sudo snap install radare2
+git clone https://github.com/radareorg/radare2
+radare2/sys/install.sh
 ```
 {% endtab %}
 {% endtabs %}
 
 ## Usage
 
-Based on your installation, the running command is slightly different. Here are the two commands:
+You can analyze and run the binary for debugging using the following command:
 
-{% tabs %}
-{% tab title="Kali Linux" %}
 ```nasm
 r2 -d -A <binary>
 ```
-{% endtab %}
 
-{% tab title="Ubuntu Linux" %}
-```nasm
-radare2 -d -A <binary>
-```
-{% endtab %}
-{% endtabs %}
+We use the `-d` and `-A` flags to speed our development process by preemptively analyzing the binary.  You can open a binary without these flags (with `radare2 <binary>`); however, you will need to run the analysis commands yourself.
 
-Both commands take the same arguments. The next page will cover the series of flags that are offered by `radare2`. I used the most common ones in the usage examples, but there are many more.
+## Before We Begin

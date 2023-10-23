@@ -321,7 +321,7 @@ Ensure you're comfortable doing this. This is the crux of dynamic analysis with 
 
 There are two major commands for finding data in memory: `find` and `search-pattern`.
 
-### `find`
+#### `find`
 
 `find` is built into GDB directly and is used for finding expressions within memory. The format of the `find` command is `find [/UN] start, +len|end, expr1 [, expr2, ...]`.
 
@@ -342,7 +342,7 @@ gef➤  find 0x08049000, +0x1000, 0xc3
 2 patterns found.
 ```
 
-### `search-pattern`
+#### `search-pattern`
 
 `search-pattern` is a GEF command used for finding strings. It takes a string argument and searches across the binary and loaded libraries for all instances of the string.
 
