@@ -22,6 +22,54 @@ Usage: aa[a[a[a]]]   # automatically analyze the whole program
 In almost all scenarios, `aaa` is more than plenty.  By using the `-A` flag, `aaa` is automatically executed.
 
 ## Seeking
+We use **seeking** to handle where we are looking in the binary at some time.  `radare2` maintains a **seek address** that is used to determine where we are in the binary.  This is shown on the command line:
+```nasm
+[0x0804923c]> 
+```
+
+In this case, `0x0804923c` is our seek address.  We can use the `s` command to change the seek address:
+```nasm
+[0x0804923c]> s 0x0
+[0x00000000]> 
+```
+
+When using various modules within `radare2`, the program defaults to our seek address when an address is requested.  For example, if we use the `pdf` command, it will print the disassembly of the function at the seek address:
+```nasm
+[0x00000000]> s main
+[0x0804923c]> pdf
+            ;-- eax:
+            ;-- eip:
+            ; DATA XREFS from entry0 @ 0x80490b0(r), 0x80490b6(w)
+┌ 24: int main (int argc, char **argv, char **envp);
+│           0x0804923c b    55             push ebp
+│           0x0804923d      89e5           mov ebp, esp
+│           0x0804923f      83e4f0         and esp, 0xfffffff0
+│           0x08049242      e80d000000     call sym.__x86.get_pc_thunk.ax
+│           0x08049247      05b92d0000     add eax, 0x2db9
+│           0x0804924c      e89effffff     call sym.read_in
+│           0x08049251      90             nop
+│           0x08049252      c9             leave
+└           0x08049253      c3             ret
+```
+
+However, we can use the `@` symbol to specify a different address:
+```nasm
+[0x0804923c]> s 0
+[0x00000000]> pdf @ main
+            ;-- eax:
+            ;-- eip:
+            ; DATA XREFS from entry0 @ 0x80490b0(r), 0x80490b6(w)
+┌ 24: int main (int argc, char **argv, char **envp);
+│           0x0804923c b    55             push ebp
+│           0x0804923d      89e5           mov ebp, esp
+│           0x0804923f      83e4f0         and esp, 0xfffffff0
+│           0x08049242      e80d000000     call sym.__x86.get_pc_thunk.ax
+│           0x08049247      05b92d0000     add eax, 0x2db9
+│           0x0804924c      e89effffff     call sym.read_in
+│           0x08049251      90             nop
+│           0x08049252      c9             leave
+└           0x08049253      c3             ret
+```
 
 ## Cross-References (X-Refs)
 `axt` - Find X-Refs **to** a function
@@ -154,6 +202,48 @@ relro    partial
 ```
 
 ### Imports and Exports
+Imports and exports are important for understanding the libraries that are imported into the binary and the functions that are externally visible and usable.
+
+Function imports are essential for understanding the library functions that are used in the binary. This provides a massive hint into the functionality of the binary.  Use `i`` to list the imports.
+```nasm
+[0x00000000]> ii
+[Imports]
+nth vaddr      bind   type   lib name
+―――――――――――――――――――――――――――――――――――――
+1   0x08049040 GLOBAL FUNC       __libc_start_main
+2   0x08049050 GLOBAL FUNC       fflush
+3   0x08049060 GLOBAL FUNC       gets
+4   0x08049070 GLOBAL FUNC       puts
+5   0x08049080 GLOBAL FUNC       system
+6   ---------- WEAK   NOTYPE     __gmon_start__
+7   ---------- GLOBAL OBJ        stdout
+```
+
+Use `iE` to list the exports.  This is useful for understanding the functions that are externally visible and usable.  This is especially useful for understanding the functions that are called from other binaries.
+```nasm
+[0x00000000]> iE
+[Exports]
+nth paddr      vaddr      bind   type   size lib name                    demangled
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+8   0x00002004 0x0804a004 GLOBAL OBJ    4        _IO_stdin_used
+19  0x000010e0 0x080490e0 GLOBAL FUNC   4        __x86.get_pc_thunk.bx
+23  ---------- 0x0804c028 GLOBAL NOTYPE 0        _edata
+24  0x00001258 0x08049258 GLOBAL FUNC   0        _fini
+25  0x00003020 0x0804c020 GLOBAL NOTYPE 0        __data_start
+29  0x00003024 0x0804c024 GLOBAL OBJ    0        __dso_handle
+30  0x00002004 0x0804a004 GLOBAL OBJ    4        _IO_stdin_used
+31  0x000011a6 0x080491a6 GLOBAL FUNC   73       win
+32  ---------- 0x0804c02c GLOBAL NOTYPE 0        _end
+33  0x000010d0 0x080490d0 GLOBAL FUNC   5        _dl_relocate_static_pie
+34  0x00001090 0x08049090 GLOBAL FUNC   49       _start
+35  0x00002000 0x0804a000 GLOBAL OBJ    4        _fp_hw
+37  ---------- 0x0804c028 GLOBAL NOTYPE 0        __bss_start
+38  0x0000123c 0x0804923c GLOBAL FUNC   24       main
+39  0x00001254 0x08049254 GLOBAL FUNC   0        __x86.get_pc_thunk.ax
+40  0x000011ef 0x080491ef GLOBAL FUNC   77       read_in
+41  ---------- 0x0804c028 GLOBAL OBJ    0        __TMC_END__
+42  0x00001000 0x08049000 GLOBAL FUNC   0        _init
+```
 
 ### Strings
 The `iz` submodule is reponsible for finding strings. Based on the help pages for this submodule, we have the following options:
