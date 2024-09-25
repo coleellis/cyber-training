@@ -2,8 +2,8 @@
 
 Welcome to my notes on offensive cybersecurity and low-level programming.
 
-The site is being live hosted at: [https://cyber.cole-ellis.com](https://cyber.cole-ellis.com).\
-The GitHub repository is located at: [https://github.com/thecae/cyber-training](https://github.com/thecae/cyber-training).
+The site is being live hosted at: [https://cyber.coleellis.com](https://cyber.coleellis.com).\
+The GitHub repository is located at: [https://github.com/coleellis/cyber-training](https://github.com/coleellis/cyber-training).
 
 If this resource helped you out at all, consider supporting me on [Buymeacoffee](https://buymeacoffee.com/cyberguide) :)
 
